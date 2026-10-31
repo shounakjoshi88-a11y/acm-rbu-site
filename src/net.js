@@ -470,7 +470,7 @@ void main() {
     }
   }
 
-  function begin() {
+  function fire() {
     /* one click is one whole pass: forward out across every layer, then the
        gradient home. it always covers the full graph, so a click near the far
        edge is not a click that shows nothing */
@@ -490,32 +490,18 @@ void main() {
     { passive: true }
   );
 
-  function fire(e) {
-    if (e) {
-      /* the wave leaves from where the pointer landed: convert the click to
-         graph space, then project it onto the layer axis */
-      const r = canvas.getBoundingClientRect();
-      const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
-      const ny = 1 - ((e.clientY - r.top) / r.height) * 2;
-      const gx = rot[0] * nx + rot[1] * ny;
-      begin(Math.max(XMIN, Math.min(XMAX, gx * 1.55)));
-    } else {
-      begin();
-    }
-  }
-
   /* the copy sits on top of the canvas, so the whole field listens, not the
      canvas: only links and buttons are allowed to do their own thing */
   const hero = document.querySelector(".nethero");
   if (hero && !reduced) {
     hero.addEventListener("pointerdown", (e) => {
       if (e.target.closest("a, button")) return;
-      fire(e);
+      fire();
     });
   }
 
   const fireBtn = document.querySelector("[data-fire]");
-  if (fireBtn && !reduced) fireBtn.addEventListener("click", () => fire(null));
+  if (fireBtn && !reduced) fireBtn.addEventListener("click", () => fire());
 
   /* ---------------------------------------------------------------- render -- */
 
@@ -717,7 +703,7 @@ void main() {
   window.__net = {
     size: () => ({ w: W, h: H, zoom, edges: edges.length, nodes: nodes.length }),
     setMode: (m) => setMode(m),
-    fire: () => fire(null),
+    fire: () => fire(),
     settle(tt = 6.4) {
       stop();
       bandA = 0;
