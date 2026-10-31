@@ -17,3 +17,6 @@ node_modules/
 
 # local QA screenshots (second pass)
 shots2/
+
+# local QA screenshots (third pass)
+shots3/

@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /**
- * Regenerate src/fonts.css from Google Fonts' CSS, pointing at the
- * self-hosted woff2 files in src/media/fonts/.
+ * Download the site's webfonts and regenerate src/fonts.css from Google Fonts.
  *
  * Google serves one @font-face per unicode subset. Keeping the subsets and
  * their unicode-range intact matters: without ranges, the browser keeps only
- * the last face of a family+weight and non-latin glyphs (or everything)
- * fall back to system fonts.
+ * the last face of a family+weight and non-latin glyphs (or everything) fall
+ * back to system fonts.
+ *
+ * Fonts are the ones Modal uses on their own site: Inter for text, Fira Mono
+ * for the machine labels.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -19,17 +21,25 @@ const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 const SOURCES = [
-  { family: "Space Grotesk", slug: "Space-Grotesk", url: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" },
-  { family: "IBM Plex Mono", slug: "IBM-Plex-Mono", url: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" },
+  {
+    family: "Inter",
+    slug: "Inter",
+    url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
+  },
+  {
+    family: "Fira Mono",
+    slug: "Fira-Mono",
+    url: "https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500&display=swap",
+  },
 ];
 
-const get = (url) =>
+const get = (url, as = "text") =>
   fetch(url, { headers: { "User-Agent": UA } }).then((r) => {
     if (!r.ok) throw new Error(`${r.status} ${url}`);
-    return r.text();
+    return as === "text" ? r.text() : r.arrayBuffer();
   });
 
-const files = new Set(fs.readdirSync(FONT_DIR));
+fs.mkdirSync(FONT_DIR, { recursive: true });
 const out = [];
 
 for (const src of SOURCES) {
@@ -44,9 +54,11 @@ for (const src of SOURCES) {
     if (!weight || !url || !range) continue;
 
     const file = `${src.slug}-${weight}-${subset}.woff2`;
-    if (!files.has(file)) {
-      console.warn(`skip ${file} (not downloaded)`);
-      continue;
+    const dest = path.join(FONT_DIR, file);
+    if (!fs.existsSync(dest)) {
+      const buf = await get(url, "buffer");
+      fs.writeFileSync(dest, Buffer.from(buf));
+      console.log(`download ${file} (${(buf.byteLength / 1024).toFixed(1)} KB)`);
     }
     out.push(
       `@font-face{font-family:'${src.family}';font-style:normal;font-weight:${weight};font-display:swap;` +

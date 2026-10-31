@@ -14,7 +14,7 @@
 <meta property="og:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="ACM RBU Student Chapter — the chapter logo inside a diamond ring on a blueprint grid.">
+<meta property="og:image:alt" content="The chapter's mainboard, assembled: a dark board with blue copper, gold contacts and the ACM mark on the die.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_IN">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
 document.documentElement.classList.add("js")</script>
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="site.css">
-<script defer src="machine.js"></script>
+<script type="module" src="scene.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -53,75 +53,63 @@ document.documentElement.classList.add("js")</script>
 
 <main id="main">
 
-  <!-- ============ hero: the chapter, drawn as its own mainboard ============ -->
+  <!-- ============ hero: the machine, assembled by scroll ============ -->
   <section class="hero" id="hero">
-    <div class="pin">
-      <div class="hero__board"><!--BOARD--></div>
-
+    <div class="hero__pin">
       <div class="hero__copy wrap">
-        <h1>Where computing is built, not just studied.</h1>
+        <h1>Where computing is built,<br>not just studied.</h1>
         <p class="hero__lead">The ACM student chapter at Ramdeobaba University, Nagpur.
-        Eight years of workshops, hackathons and late-night builds, run by students
-        for students.</p>
+        Eight years of workshops, hackathons and late-night builds, run by students for students.</p>
         <div class="hero__cta">
           <a class="btn btn--primary" href="#join">Join the chapter</a>
           <a class="btn btn--quiet" href="#record">See the record</a>
         </div>
       </div>
 
-      <div class="rail" aria-hidden="true"><span></span></div>
+      <div class="stage-wrap">
+        <canvas class="stage" data-stage aria-hidden="true"></canvas>
+        <img class="stage-poster" src="media/board-poster.jpg" alt="The chapter's mainboard drawn as a field of glowing blue glyphs: copper traces, a socket, a heatsink and the ACM mark on the die." width="1887" height="1126">
+      </div>
     </div>
   </section>
 
-  <!-- ============ the record: numbers from the chapter file ============ -->
+  <!-- ============ the record ============ -->
   <section class="sect" id="record">
     <div class="wrap">
       <header class="sect__head">
         <h2>The record</h2>
         <p class="sect__note">Six numbers from the chapter's own file. Nothing rounded up.</p>
       </header>
-      <ol class="spec">
+      <ol class="stats">
         <li>
-          <span class="spec__n">1300</span>
-          <div class="spec__body">
-            <h3>INNOVANZA'25</h3>
-            <p>Participants in the national project competition, 14 May 2025.</p>
-          </div>
+          <span class="stats__n">1300</span>
+          <h3>INNOVANZA'25</h3>
+          <p>Participants in the national project competition, 14 May 2025.</p>
         </li>
         <li>
-          <span class="spec__n">300</span>
-          <div class="spec__body">
-            <h3>AICWiC 2020</h3>
-            <p>Delegates at ACM India's celebration of women in computing, 5 September 2020.</p>
-          </div>
+          <span class="stats__n">300</span>
+          <h3>AICWiC 2020</h3>
+          <p>Delegates at ACM India's celebration of women in computing, 5 September 2020.</p>
         </li>
         <li>
-          <span class="spec__n">629</span>
-          <div class="spec__body">
-            <h3>One session, 629 students</h3>
-            <p>Introduction to Essential Platforms for CSE, 28 November 2024.</p>
-          </div>
+          <span class="stats__n">629</span>
+          <h3>One session</h3>
+          <p>Students in a single sitting for Essential Platforms for CSE, 28 November 2024.</p>
         </li>
         <li>
-          <span class="spec__n">350</span>
-          <div class="spec__body">
-            <h3>Dr. Aditya Abhyankar</h3>
-            <p>In the hall for the ACM Distinguished Speaker, 14 May 2025.</p>
-          </div>
+          <span class="stats__n">350</span>
+          <h3>Dr. Aditya Abhyankar</h3>
+          <p>In the hall for the ACM Distinguished Speaker, 14 May 2025.</p>
         </li>
         <li>
-          <span class="spec__n">50</span>
-          <div class="spec__body">
-            <h3>ACM Winter School on Digital Twins</h3>
-            <p>Students selected nationally, hosted at RBU, December 2025.</p>
-          </div>
+          <span class="stats__n">50</span>
+          <h3>Winter School</h3>
+          <p>Students selected nationally for Digital Twins, hosted at RBU, December 2025.</p>
         </li>
         <li>
-          <span class="spec__n">18</span>
-          <div class="spec__body">
-            <h3>The crew</h3>
-            <p>Students who run the chapter right now, per its LinkedIn roster.</p>
-          </div>
+          <span class="stats__n">18</span>
+          <h3>The crew</h3>
+          <p>Students who run the chapter right now, per its LinkedIn roster.</p>
         </li>
       </ol>
     </div>
@@ -134,47 +122,41 @@ document.documentElement.classList.add("js")</script>
         <h2>What we run</h2>
         <p class="sect__note">Five program lines, each with the last thing it actually did.</p>
       </header>
-      <ul class="lines">
+      <ul class="grid6">
         <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="#f6f9fc"/><circle cx="15" cy="12" r="2" fill="#f6f9fc"/><circle cx="7" cy="17" r="2" fill="#f6f9fc"/></svg>
           <h3>Workshops and bootcamps</h3>
-          <div>
-            <p>Hands-on learning in AI/ML, cybersecurity, web development and open source.</p>
-            <p class="lines__last">Latest: Fundamentals of Deep Learning with NVIDIA, March 2024.</p>
-          </div>
+          <p>Hands-on learning in AI/ML, cybersecurity, web development and open source.</p>
+          <p class="grid6__last">Latest: Fundamentals of Deep Learning with NVIDIA, March 2024.</p>
         </li>
         <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 4h10v3a5 5 0 0 1-10 0z"/><path d="M7 5H4v1a3 3 0 0 0 3 3M17 5h3v1a3 3 0 0 1-3 3"/><path d="M12 12v4M9 20h6M10 16h4v4h-4z"/></svg>
           <h3>Hackathons and contests</h3>
-          <div>
-            <p>Competitive programming that sharpens how you think under a clock.</p>
-            <p class="lines__last">Latest: Prajwalan, a DSA contest with ₹12,000 in prizes, October 2025.</p>
-          </div>
+          <p>Competitive programming that sharpens how you think under a clock.</p>
+          <p class="grid6__last">Latest: Prajwalan, a DSA contest with ₹12,000 in prizes, October 2025.</p>
         </li>
         <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
           <h3>Talks and guest lectures</h3>
-          <div>
-            <p>Sessions with engineers, alumni and researchers who do the work.</p>
-            <p class="lines__last">Latest: a principal engineer at Autodesk on cracking MNC interviews, March 2025.</p>
-          </div>
+          <p>Sessions with engineers, alumni and researchers who do the work.</p>
+          <p class="grid6__last">Latest: a principal engineer at Autodesk on cracking MNC interviews, March 2025.</p>
         </li>
         <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
           <h3>Research and paper writing</h3>
-          <div>
-            <p>Academic writing, and sending students to conferences and journals.</p>
-            <p class="lines__last">Latest: the ACM Winter School on Digital Twins, December 2025.</p>
-          </div>
+          <p>Academic writing, and sending students to conferences and journals.</p>
+          <p class="grid6__last">Latest: the ACM Winter School on Digital Twins, December 2025.</p>
         </li>
         <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21c0-7 4-11 9-11-1 7-4 11-9 11z"/><path d="M12 21C9 16 6 14 3 14c1 5 4 7 9 7z"/><path d="M12 21v-5"/></svg>
           <h3>Tech for good</h3>
-          <div>
-            <p>Technology pointed at problems outside the campus gate.</p>
-            <p class="lines__last">Latest: ECOTHON, the sustainability hackathon with REEF RBU.</p>
-          </div>
+          <p>Technology pointed at problems outside the campus gate.</p>
+          <p class="grid6__last">Latest: ECOTHON, the sustainability hackathon with REEF RBU.</p>
         </li>
-        <li class="lines__open">
+        <li class="grid6__open">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke-dasharray="2 3"/></svg>
           <h3>Something new</h3>
-          <div>
-            <p>An empty slot this year's crew hasn't filled yet. It usually goes to whoever asks first.</p>
-          </div>
+          <p>An empty slot this year's crew hasn't filled yet. It usually goes to whoever asks first.</p>
         </li>
       </ul>
     </div>
@@ -240,8 +222,8 @@ document.documentElement.classList.add("js")</script>
     <div class="wrap">
       <header class="sect__head">
         <h2>The crew</h2>
-        <p class="sect__note">Two faculty coordinators on the university record, and eighteen students
-        who do the work.</p>
+        <p class="sect__note">Two faculty coordinators on the university record, and eighteen
+        students who do the work.</p>
       </header>
       <ul class="people">
         <li>
@@ -263,9 +245,9 @@ document.documentElement.classList.add("js")</script>
 
   <!-- ============ join ============ -->
   <section class="sect sect--join" id="join">
-    <div class="wrap">
+    <div class="wrap join">
       <h2>Come build with us.</h2>
-      <p class="sect__note">The chapter is students. Turn up to a workshop, pitch an event, or
+      <p class="join__note">The chapter is students. Turn up to a workshop, pitch an event, or
       write the first line of the next thing we ship.</p>
       <div class="join__links">
         <a class="btn btn--inverse" href="mailto:info@rbustudentchapter.acm.org">info@rbustudentchapter.acm.org</a>
