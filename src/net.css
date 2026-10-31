@@ -1,0 +1,405 @@
+/* ==========================================================================
+   The network page.
+
+   Its own theme: near-black so a pulse can actually glow, with a paper
+   variant that keeps the same drawing and swaps the ink for the site's blue.
+   Everything below either sets that theme or lays out the field.
+   ========================================================================== */
+
+/* --------------------------------------------------------------- theme -- */
+
+html.ink {
+  color-scheme: dark;
+
+  --bg: #06080d;
+  --bg-deep: #080b12;
+  --panel: #0a0e16;
+
+  --fg: #eaf1fd;
+  --fg-2: #94a3ba;
+  --fg-3: #66748a;
+
+  --ink: #eaf1fd;
+
+  --accent: #4a83ff;
+  --accent-lit: #6c9bff;
+  --accent-deep: #2f6df6;
+
+  --line: rgba(234, 241, 253, 0.15);
+  --line-soft: rgba(234, 241, 253, 0.075);
+}
+
+html.ink .nav {
+  background: rgba(6, 8, 13, 0.7);
+}
+
+html.ink .nav__links a:hover {
+  background: rgba(234, 241, 253, 0.08);
+}
+
+html.ink .btn--quiet {
+  background: rgba(234, 241, 253, 0.06);
+  border-color: var(--line);
+  color: var(--fg);
+}
+
+html.ink .btn--quiet:hover {
+  background: rgba(234, 241, 253, 0.11);
+  border-color: rgba(234, 241, 253, 0.24);
+}
+
+html.ink .btn--primary {
+  background: #3d78ff;
+  border-color: #3d78ff;
+  color: #fff;
+  box-shadow: 0 0 0 1px rgba(90, 140, 255, 0.35), 0 14px 40px -14px rgba(74, 131, 255, 0.95);
+}
+
+html.ink .btn--primary:hover {
+  background: #4f87ff;
+  border-color: #4f87ff;
+}
+
+html.ink .brand__logo {
+  filter: brightness(1.35) saturate(1.1);
+}
+
+html.ink .foot__brand img {
+  filter: brightness(1.3);
+}
+
+/* ----------------------------------------------------------- theme switch -- */
+
+.nav__theme {
+  flex: none;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.nav__theme:hover {
+  color: var(--fg);
+  border-color: rgba(128, 160, 255, 0.45);
+}
+
+.nav__theme:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- the field -- */
+
+.nethero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 65px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.nethero__stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* one radial does both jobs: a quiet hole behind the type, and a field that
+     fades out at the edges instead of stopping like a picture */
+  -webkit-mask-image: radial-gradient(
+    ellipse 76% 72% at 50% 50%,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.42) 26%,
+    #000 52%,
+    #000 74%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 76% 72% at 50% 50%,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.42) 26%,
+    #000 52%,
+    #000 74%,
+    transparent 100%
+  );
+}
+
+/* a soft hole behind the type, so the copy never fights the wires */
+.nethero__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 52% 38% at 50% 46%,
+      color-mix(in srgb, var(--bg) 94%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 74%, transparent) 42%,
+      color-mix(in srgb, var(--bg) 26%, transparent) 72%,
+      transparent 100%);
+}
+
+.nethero__copy {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding-block: clamp(88px, 15vh, 168px) clamp(88px, 14vh, 150px);
+}
+
+.eyebrow {
+  margin-bottom: var(--s5);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.nethero h1 {
+  max-width: 18ch;
+  margin-inline: auto;
+  font-size: clamp(2.5rem, 5.6vw, 4.6rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.nethero__lead {
+  max-width: 58ch;
+  margin: var(--s5) auto 0;
+  font-size: clamp(1rem, 1.15vw, 1.125rem);
+  line-height: 1.62;
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+
+.nethero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s3);
+  margin-top: var(--s6);
+}
+
+.nethero__hint {
+  margin-top: var(--s5);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--fg-2);
+}
+
+/* --------------------------------------------------------------- the hud -- */
+
+.nethero__hud {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateX(-50%);
+  padding: 7px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+
+.hud__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74, 131, 255, 0.18);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.nethero__hud[data-mode="back"] .hud__dot {
+  background: #ff9a4d;
+  box-shadow: 0 0 0 3px rgba(255, 154, 77, 0.2);
+}
+
+.nethero__hud[data-mode="back"] [data-hud-mode] {
+  color: #ffb27a;
+}
+
+.hud__sep {
+  opacity: 0.45;
+}
+
+/* ------------------------------------------------------------ the explainer -- */
+
+.sect__head h2 {
+  font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+  font-weight: 500;
+  letter-spacing: -0.028em;
+}
+
+.sect__head p {
+  max-width: 54ch;
+  margin-top: var(--s4);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+
+.netgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: var(--s7);
+  border-top: 1px solid var(--line-soft);
+}
+
+.netcard {
+  padding: var(--s6) var(--s6) var(--s6) 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.netcard + .netcard {
+  padding-left: var(--s6);
+  border-left: 1px solid var(--line-soft);
+}
+
+.netcard__n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+.netcard h3 {
+  margin-top: var(--s3);
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.netcard p:not(.netcard__n) {
+  margin-top: var(--s3);
+  font-size: 0.9375rem;
+  line-height: 1.62;
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+
+.netnote {
+  max-width: 62ch;
+  margin-top: var(--s6);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--fg-3);
+}
+
+/* ------------------------------------------------------------ fallbacks -- */
+
+html.no-js .nethero__stage,
+html.no-gl .nethero__stage {
+  display: none;
+}
+
+html.no-gl .nethero,
+html.no-js .nethero {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 55%, rgba(74, 131, 255, 0.18), transparent 70%),
+    var(--bg);
+}
+
+html.no-js .nethero__hint,
+html.no-gl .nethero__hint,
+html.no-js .nethero__hud,
+html.no-gl .nethero__hud {
+  display: none;
+}
+
+/* -------------------------------------------------------------- responsive -- */
+
+@media (max-width: 1023px) {
+  .nethero__copy {
+    padding-block: clamp(72px, 12vh, 120px) clamp(72px, 11vh, 110px);
+  }
+
+  .netgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .netcard {
+    padding: var(--s5) 0;
+  }
+
+  .netcard + .netcard {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .nethero h1 {
+    font-size: clamp(2.1rem, 9.4vw, 3rem);
+  }
+
+  .nethero__hint {
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+  }
+
+  .nethero__hud {
+    bottom: 16px;
+    font-size: 10px;
+  }
+
+  /* a phone stacks the copy down the whole field, so the hole has to be a
+     tall one rather than the round one a wide screen can afford */
+  .nethero__stage {
+    -webkit-mask-image: radial-gradient(
+      ellipse 62% 46% at 50% 50%,
+      rgba(0, 0, 0, 0.07) 0%,
+      rgba(0, 0, 0, 0.34) 38%,
+      #000 72%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 62% 46% at 50% 50%,
+      rgba(0, 0, 0, 0.07) 0%,
+      rgba(0, 0, 0, 0.34) 38%,
+      #000 72%,
+      transparent 100%
+    );
+  }
+
+  .nethero__veil {
+    background: radial-gradient(ellipse 60% 42% at 50% 50%,
+      color-mix(in srgb, var(--bg) 95%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 82%, transparent) 52%,
+      color-mix(in srgb, var(--bg) 30%, transparent) 78%,
+      transparent 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud__dot {
+    transition: none;
+  }
+}
+
+/* the still-frame path has nothing to fire, so it keeps no promise it cannot
+   keep: the button and the hint go away */
+html.still [data-fire],
+html.still .nethero__hint {
+  display: none;
+}

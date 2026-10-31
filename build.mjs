@@ -15,7 +15,17 @@ const SRC = path.join(SITE, "src");
 const DIST = path.join(SITE, "dist");
 
 const log = (...a) => console.log(...a);
-const FILES = ["index.html", "site.css", "fonts.css", "scene.js", "robots.txt", "sitemap.xml"];
+const FILES = [
+  "index.html",
+  "net.html",
+  "site.css",
+  "net.css",
+  "fonts.css",
+  "scene.js",
+  "net.js",
+  "robots.txt",
+  "sitemap.xml",
+];
 const DIRS = ["media", "vendor"];
 
 fs.rmSync(DIST, { recursive: true, force: true });

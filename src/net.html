@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" class="no-js ink">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06080d">
+<title>The network — ACM RBU Student Chapter</title>
+<meta name="description" content="A live picture of a neural network: two thousand edges, attention moving between them, and the gradient travelling back. Built by the ACM Student Chapter at Ramdeobaba University, Nagpur.">
+<link rel="canonical" href="https://acm-rbu-site.vercel.app/net.html">
+<meta property="og:site_name" content="ACM RBU Student Chapter">
+<meta property="og:title" content="The network — attention, drawn as it happens">
+<meta property="og:description" content="Two thousand edges, seven layers, a signal you can send yourself. A forward pass, attention, and the gradient coming back.">
+<meta property="og:url" content="https://acm-rbu-site.vercel.app/net.html">
+<meta property="og:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The network — attention, drawn as it happens">
+<meta name="twitter:description" content="A forward pass, attention, and the gradient coming back, drawn live.">
+<meta name="twitter:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
+<link rel="icon" type="image/png" href="media/acm-logo-200.png">
+<link rel="apple-touch-icon" href="media/acm-logo-200.png">
+<script>document.documentElement.classList.remove("no-js");
+document.documentElement.classList.add("js");
+try{var th=localStorage.getItem("acm-theme");if(th==="paper"){document.documentElement.classList.remove("ink");document.documentElement.classList.add("paper")}}catch(e){}</script>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="net.css">
+<script type="module" src="net.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav__row">
+    <a class="brand" href="./">
+      <img class="brand__logo" src="media/acm-logo-200.png" alt="" width="34" height="34">
+      <span class="brand__word">
+        <strong>ACM RBU</strong>
+        <span>Student Chapter</span>
+      </span>
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="./#record">Record</a>
+      <a href="./#work">What we run</a>
+      <a href="./#events">Events</a>
+      <a href="./#crew">Crew</a>
+      <a href="net.html" aria-current="page">Network</a>
+    </nav>
+    <button class="nav__theme" type="button" data-theme aria-label="Switch to the paper theme">
+      <span data-theme-label>Paper</span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ the field: a graph you can send a signal through ============ -->
+  <section class="nethero" id="field">
+    <canvas class="nethero__stage" data-net aria-hidden="true"></canvas>
+    <div class="nethero__veil" aria-hidden="true"></div>
+
+    <div class="wrap nethero__copy">
+      <p class="eyebrow">A working picture</p>
+      <h1>Attention, drawn<br>as it happens.</h1>
+      <p class="nethero__lead">Two thousand edges, seven layers, and a signal you can send
+      yourself. This is the page's own model of a forward pass, of attention moving between
+      wires, and of the gradient coming back the way it came.</p>
+      <div class="nethero__cta">
+        <button class="btn btn--primary" type="button" data-fire>Fire a pass</button>
+        <a class="btn btn--quiet" href="#how">How it works</a>
+      </div>
+      <p class="nethero__hint">Click anywhere in the field to send a signal through it.</p>
+    </div>
+
+    <div class="nethero__hud" aria-hidden="true">
+      <span class="hud__dot" data-hud-dot></span>
+      <span data-hud-mode>forward pass</span>
+      <span class="hud__sep">/</span>
+      <span data-hud-count>2,328 edges</span>
+    </div>
+  </section>
+
+  <!-- ============ how it works ============ -->
+  <section class="sect" id="how">
+    <div class="wrap">
+      <div class="sect__head">
+        <h2>What you are looking at</h2>
+        <p>Three things happen on those wires every time you fire a pass. Nothing moves
+        through the graph until you do.</p>
+      </div>
+
+      <div class="netgrid">
+        <article class="netcard">
+          <p class="netcard__n">01</p>
+          <h3>Forward</h3>
+          <p>Every edge carries an activation from one layer to the next. The bright heads are
+          the ones moving right now; the dim lines are the ones waiting their turn. Seven
+          layers, fourteen nodes in the first and last, forty-four in the middle.</p>
+        </article>
+        <article class="netcard">
+          <p class="netcard__n">02</p>
+          <h3>Attention</h3>
+          <p>Not every wire matters equally. At any moment a handful of edges take most of the
+          signal, and which handful it is changes from pass to pass. That is the whole trick:
+          the network decides where to look, then looks there harder.</p>
+        </article>
+        <article class="netcard">
+          <p class="netcard__n">03</p>
+          <h3>Backward</h3>
+          <p>When a pass ends the direction reverses and the field turns warm. Gradients travel
+          the same edges home, and every edge that carried a lot of signal on the way out
+          carries a lot of blame on the way back.</p>
+        </article>
+      </div>
+
+      <p class="netnote">This is a visual model, not a trained network. Every weight on the
+      page is a hash of its own index — no data, no training, nothing to be accurate about.
+      The structure is real; the numbers are decoration.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div class="foot__brand">
+      <img src="media/acm-logo-200.png" alt="" width="38" height="38">
+      <p>ACM RBU Student Chapter<br>
+      Association for Computing Machinery<br>
+      Ramdeobaba University, Nagpur</p>
+    </div>
+    <nav class="foot__col" aria-label="Sections">
+      <a href="./#record">Record</a>
+      <a href="./#work">What we run</a>
+      <a href="./#events">Events</a>
+      <a href="./#crew">Crew</a>
+      <a href="./#join">Join</a>
+    </nav>
+    <nav class="foot__col" aria-label="Elsewhere">
+      <a href="https://www.acm.org" rel="noopener" target="_blank">ACM</a>
+      <a href="https://in.linkedin.com/company/indiaacm" rel="noopener" target="_blank">ACM India</a>
+      <a href="https://acm-prajwalan.vercel.app/" rel="noopener" target="_blank">Prajwalan</a>
+      <a href="https://rbunagpur.in/computer-science-engineering-and-emerging-technologies/acm/" rel="noopener" target="_blank">The university record</a>
+    </nav>
+    <div class="foot__col foot__col--soon">
+      <p>Still being wired up</p>
+      <span>Events archive</span>
+      <span>Gallery</span>
+      <span>Crew page</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
