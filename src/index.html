@@ -6,11 +6,23 @@
 <meta name="theme-color" content="#f6f9fc">
 <title>ACM RBU Student Chapter — Association for Computing Machinery, Ramdeobaba University</title>
 <meta name="description" content="The official ACM Student Chapter at Ramdeobaba University, Nagpur. Hands-on workshops, hackathons, mentorship and projects — assembled by students since 18 October 2018.">
-<meta property="og:title" content="ACM RBU Student Chapter">
+<link rel="canonical" href="https://acm-rbu-site.vercel.app/">
+<meta property="og:site_name" content="ACM RBU Student Chapter">
+<meta property="og:title" content="ACM RBU Student Chapter — where computing is built">
 <meta property="og:description" content="Where computing is built, not just studied. Workshops, hackathons, mentorship and projects at Ramdeobaba University, Nagpur.">
-<meta property="og:image" content="media/post-2026-02-04-a.jpg">
+<meta property="og:url" content="https://acm-rbu-site.vercel.app/">
+<meta property="og:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ACM RBU Student Chapter — the chapter logo inside a diamond ring on a blueprint grid.">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ACM RBU Student Chapter — where computing is built">
+<meta name="twitter:description" content="Workshops, hackathons, mentorship and projects at Ramdeobaba University, Nagpur.">
+<meta name="twitter:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
 <link rel="icon" type="image/png" href="media/acm-logo-200.png">
+<link rel="apple-touch-icon" href="media/acm-logo-200.png">
 <script>document.documentElement.classList.remove("no-js");
 document.documentElement.classList.add("js")</script>
 <link rel="stylesheet" href="fonts.css">
@@ -22,264 +34,244 @@ document.documentElement.classList.add("js")</script>
 
 <header class="nav">
   <div class="wrap nav__row">
-    <a class="brand" href="./" aria-label="ACM RBU Student Chapter, home">
-      <img class="brand__logo" src="media/acm-logo-200.png" alt="" width="48" height="48">
+    <a class="brand" href="./">
+      <img class="brand__logo" src="media/acm-logo-200.png" alt="" width="34" height="34">
       <span class="brand__word">
         <strong>ACM RBU</strong>
         <span>Student Chapter</span>
       </span>
-      <span class="brand__live" aria-hidden="true"></span>
-      <span class="sr-only">chapter running</span>
     </a>
-    <nav class="nav__links" aria-label="Primary">
-      <a href="#manifest">Manifest</a>
-      <a href="#record">The record</a>
-      <a href="#programs">Modules</a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#record">Record</a>
+      <a href="#work">What we run</a>
+      <a href="#events">Events</a>
       <a href="#crew">Crew</a>
     </nav>
-    <a class="btn btn--key btn--sm" href="#join">Join</a>
+    <a class="btn btn--primary btn--sm" href="#join">Join</a>
   </div>
 </header>
 
 <main id="main">
 
-  <!-- ==================== hero: the machine assembles ==================== -->
+  <!-- ============ hero: the chapter, drawn as its own mainboard ============ -->
   <section class="hero" id="hero">
     <div class="pin">
-      <canvas id="mcv" aria-hidden="true"></canvas>
-      <div class="hero__grid" aria-hidden="true"></div>
+      <div class="hero__board"><!--BOARD--></div>
+
       <div class="hero__copy wrap">
-        <p class="hero__strip">Official ACM Student Chapter / Ramdeobaba University, Nagpur / est.&nbsp;18&nbsp;October&nbsp;2018</p>
         <h1>Where computing is built, not just studied.</h1>
-        <p class="hero__sub">Hands-on workshops, hackathons, mentorship and projects — assembled by
-        students, running for eight years and still served warm.</p>
+        <p class="hero__lead">The ACM student chapter at Ramdeobaba University, Nagpur.
+        Eight years of workshops, hackathons and late-night builds, run by students
+        for students.</p>
         <div class="hero__cta">
-          <a class="btn btn--key" href="#join">Join the chapter</a>
-          <a class="btn btn--gag" href="#record">Read the record</a>
+          <a class="btn btn--primary" href="#join">Join the chapter</a>
+          <a class="btn btn--quiet" href="#record">See the record</a>
         </div>
-        <p class="hero__hint">scroll — the machine assembles</p>
       </div>
-      <div class="hero__die" aria-hidden="true">
-        <img src="media/acm-logo-200.png" alt="" width="96" height="96">
-      </div>
+
+      <div class="rail" aria-hidden="true"><span></span></div>
     </div>
   </section>
 
-  <!-- ==================== manifest: vision on record ==================== -->
-  <section class="sect sect--manifest" id="manifest">
+  <!-- ============ the record: numbers from the chapter file ============ -->
+  <section class="sect" id="record">
     <div class="wrap">
-      <div class="plate-label" aria-hidden="true">est. 18-10-2018 · plate 01 · about</div>
-      <div class="manifest__grid">
-        <div class="manifest__lead">
-          <h2>The manifest</h2>
-          <p class="manifest__vision">“To inspire and empower students to become leaders in the field of
-          computer science and information technology through exposure to cutting-edge research,
-          hands-on learning experiences, and community engagement.”</p>
-        </div>
-        <ul class="manifest__list">
-          <li>Promote interest in computer science and allied disciplines.</li>
-          <li>Encourage student-led technical events, workshops and hackathons.</li>
-          <li>Bridge the gap between academia and industry through expert talks and panel discussions.</li>
-          <li>Provide platforms for collaborative learning, coding competitions and project development.</li>
-          <li>Foster the ethical and responsible use of technology.</li>
-        </ul>
-      </div>
-      <p class="credit">Vision and objectives as compiled in Ramdeobaba University's professional-chapters record.</p>
-    </div>
-  </section>
-
-  <!-- ==================== throughput: the record in people ==================== -->
-  <section class="sect sect--throughput" id="record">
-    <div class="wrap">
-      <div class="plate-label" aria-hidden="true">plate 02 · the record</div>
-      <h2>Machine throughput</h2>
-      <p class="sect__sub">Eight years of sessions, contests and festivals, measured the honest way — in people.
-      Every number here comes from the chapter record or the announcement posts.</p>
-      <ul class="throughput__grid">
-        <li class="chip">
-          <span class="chip__led" aria-hidden="true"></span>
-          <strong>1300</strong>
-          <span>participants at INNOVANZA'25, the national project competition, 14 May 2025</span>
-        </li>
-        <li class="chip">
-          <span class="chip__led" aria-hidden="true"></span>
-          <strong>300</strong>
-          <span>delegates at AICWiC 2020, ACM India's celebration of women in computing, 5 Sep 2020</span>
-        </li>
-        <li class="chip">
-          <span class="chip__led" aria-hidden="true"></span>
-          <strong>629</strong>
-          <span>students in one session — Introduction to Essential Platforms for CSE, 28 Nov 2024</span>
-        </li>
-        <li class="chip">
-          <span class="chip__led" aria-hidden="true"></span>
-          <strong>350</strong>
-          <span>in the hall for ACM Distinguished Speaker Dr.&nbsp;Aditya&nbsp;Abhyankar, 14 May 2025</span>
-        </li>
-        <li class="chip">
-          <span class="chip__led" aria-hidden="true"></span>
-          <strong>50</strong>
-          <span>students selected nationally for the ACM Winter School on Digital Twins hosted at RBU, Dec 2025</span>
-        </li>
-        <li class="chip">
-          <span class="chip__led" aria-hidden="true"></span>
-          <strong>18</strong>
-          <span>members on the current student crew, per the chapter's LinkedIn roster</span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ==================== modules: what the machine does ==================== -->
-  <section class="sect sect--programs" id="programs">
-    <div class="wrap">
-      <div class="plate-label" aria-hidden="true">plate 03 · modules</div>
-      <h2>Working modules</h2>
-      <p class="sect__sub">The chapter runs on five program lines, straight from the university record.
-      Each plate notes that line's most recent run.</p>
-      <ul class="modules__grid">
-        <li class="mod">
-          <span class="mod__led" aria-hidden="true"></span>
-          <span class="mod__code">wl-1</span>
-          <h3>Workshops &amp; bootcamps</h3>
-          <p>Hands-on learning in AI/ML, cybersecurity, web development and open source.
-          Most recent: Fundamentals of Deep Learning with NVIDIA, March 2024.</p>
-        </li>
-        <li class="mod">
-          <span class="mod__led" aria-hidden="true"></span>
-          <span class="mod__code">wl-2</span>
-          <h3>Hackathons &amp; contests</h3>
-          <p>Competitive programming that sharpens problem-solving.
-          Most recent: Prajwalan, the DSA contest with <span class="mono">₹12,000</span> in prizes, October 2025.</p>
-        </li>
-        <li class="mod">
-          <span class="mod__led" aria-hidden="true"></span>
-          <span class="mod__code">wl-3</span>
-          <h3>Tech talks &amp; guest lectures</h3>
-          <p>Sessions with industry professionals, alumni and researchers.
-          Most recent: a principal engineer at Autodesk on cracking MNC interviews, March 2025.</p>
-        </li>
-        <li class="mod">
-          <span class="mod__led" aria-hidden="true"></span>
-          <span class="mod__code">wl-4</span>
-          <h3>Research &amp; paper writing</h3>
-          <p>Academic writing and participation in conferences and journals.
-          Most recent: the ACM Winter School on Digital Twins, December 2025.</p>
-        </li>
-        <li class="mod">
-          <span class="mod__led" aria-hidden="true"></span>
-          <span class="mod__code">wl-5</span>
-          <h3>Tech for good</h3>
-          <p>Technology pointed at real community problems.
-          Most recent: ECOTHON, the sustainability hackathon with REEF&nbsp;RBU.</p>
-        </li>
-        <li class="mod mod--void">
-          <span class="mod__code">wl-6</span>
-          <h3>Open slot</h3>
-          <p>Reserved for something this year's crew hasn't thought of yet.</p>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ==================== transmissions: recent real events ==================== -->
-  <section class="sect sect--transmissions" id="moments">
-    <div class="wrap">
-      <div class="plate-label" aria-hidden="true">plate 04 · transmissions</div>
-      <h2>Recent transmissions</h2>
-      <p class="sect__sub">Pulled straight off the chapter's announcement feed — the last few things the machine ran.</p>
-      <ul class="feed">
-        <li class="tx tx--photo">
-          <img src="media/post-2026-10-11-b.jpg" alt="The chapter crew with faculty and guests at the Technical Interview Readiness Program" width="800" height="600" loading="lazy">
-          <div class="tx__body">
-            <span class="tx__date mono">October 2026</span>
-            <h3>Technical Interview Readiness Program</h3>
-            <p>Crew members invigilated the HackerRank skill-assessment round of this placement-readiness
-            program, in association with Lambence Pvt.&nbsp;Ltd. and the CDPC Cell.</p>
+      <header class="sect__head">
+        <h2>The record</h2>
+        <p class="sect__note">Six numbers from the chapter's own file. Nothing rounded up.</p>
+      </header>
+      <ol class="spec">
+        <li>
+          <span class="spec__n">1300</span>
+          <div class="spec__body">
+            <h3>INNOVANZA'25</h3>
+            <p>Participants in the national project competition, 14 May 2025.</p>
           </div>
         </li>
-        <li class="tx tx--photo">
-          <img src="media/post-2026-02-04-a.jpg" alt="The crew with guests after ECOTHON, judged in front of the event board" width="800" height="600" loading="lazy">
-          <div class="tx__body">
-            <span class="tx__date mono">2026</span>
+        <li>
+          <span class="spec__n">300</span>
+          <div class="spec__body">
+            <h3>AICWiC 2020</h3>
+            <p>Delegates at ACM India's celebration of women in computing, 5 September 2020.</p>
+          </div>
+        </li>
+        <li>
+          <span class="spec__n">629</span>
+          <div class="spec__body">
+            <h3>One session, 629 students</h3>
+            <p>Introduction to Essential Platforms for CSE, 28 November 2024.</p>
+          </div>
+        </li>
+        <li>
+          <span class="spec__n">350</span>
+          <div class="spec__body">
+            <h3>Dr. Aditya Abhyankar</h3>
+            <p>In the hall for the ACM Distinguished Speaker, 14 May 2025.</p>
+          </div>
+        </li>
+        <li>
+          <span class="spec__n">50</span>
+          <div class="spec__body">
+            <h3>ACM Winter School on Digital Twins</h3>
+            <p>Students selected nationally, hosted at RBU, December 2025.</p>
+          </div>
+        </li>
+        <li>
+          <span class="spec__n">18</span>
+          <div class="spec__body">
+            <h3>The crew</h3>
+            <p>Students who run the chapter right now, per its LinkedIn roster.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ what we run ============ -->
+  <section class="sect" id="work">
+    <div class="wrap">
+      <header class="sect__head">
+        <h2>What we run</h2>
+        <p class="sect__note">Five program lines, each with the last thing it actually did.</p>
+      </header>
+      <ul class="lines">
+        <li>
+          <h3>Workshops and bootcamps</h3>
+          <div>
+            <p>Hands-on learning in AI/ML, cybersecurity, web development and open source.</p>
+            <p class="lines__last">Latest: Fundamentals of Deep Learning with NVIDIA, March 2024.</p>
+          </div>
+        </li>
+        <li>
+          <h3>Hackathons and contests</h3>
+          <div>
+            <p>Competitive programming that sharpens how you think under a clock.</p>
+            <p class="lines__last">Latest: Prajwalan, a DSA contest with ₹12,000 in prizes, October 2025.</p>
+          </div>
+        </li>
+        <li>
+          <h3>Talks and guest lectures</h3>
+          <div>
+            <p>Sessions with engineers, alumni and researchers who do the work.</p>
+            <p class="lines__last">Latest: a principal engineer at Autodesk on cracking MNC interviews, March 2025.</p>
+          </div>
+        </li>
+        <li>
+          <h3>Research and paper writing</h3>
+          <div>
+            <p>Academic writing, and sending students to conferences and journals.</p>
+            <p class="lines__last">Latest: the ACM Winter School on Digital Twins, December 2025.</p>
+          </div>
+        </li>
+        <li>
+          <h3>Tech for good</h3>
+          <div>
+            <p>Technology pointed at problems outside the campus gate.</p>
+            <p class="lines__last">Latest: ECOTHON, the sustainability hackathon with REEF RBU.</p>
+          </div>
+        </li>
+        <li class="lines__open">
+          <h3>Something new</h3>
+          <div>
+            <p>An empty slot this year's crew hasn't filled yet. It usually goes to whoever asks first.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ events ============ -->
+  <section class="sect" id="events">
+    <div class="wrap">
+      <header class="sect__head">
+        <h2>Recent events</h2>
+        <p class="sect__note">The last five things the chapter ran, from its own announcements.</p>
+      </header>
+      <ul class="log">
+        <li class="log__item">
+          <p class="log__date">October 2026</p>
+          <div class="log__body">
+            <h3>Technical Interview Readiness Program</h3>
+            <p>Crew members invigilated the HackerRank skill-assessment round of this
+            placement-readiness program, with Lambence Pvt. Ltd. and the CDPC Cell.</p>
+          </div>
+          <img src="media/post-2026-10-11-b.jpg" alt="The chapter crew with faculty and guests at the Technical Interview Readiness Program" width="800" height="600" loading="lazy">
+        </li>
+        <li class="log__item">
+          <p class="log__date">2026</p>
+          <div class="log__body">
             <h3>ECOTHON — Code for a Greener Tomorrow</h3>
-            <p>A sustainability-focused hackathon with REEF&nbsp;RBU: environment-centric problem statements,
+            <p>A sustainability hackathon with REEF RBU: environment-first problem statements,
             judged by Hemant Barapatre, CEO of Cluematrix Technologies.</p>
           </div>
+          <img src="media/post-2026-02-04-a.jpg" alt="The crew with guests after ECOTHON, in front of the event board" width="800" height="600" loading="lazy">
         </li>
-        <li class="tx">
-          <div class="tx__body">
-            <span class="tx__date mono">15–24 Dec 2025</span>
+        <li class="log__item">
+          <p class="log__date">15–24 December 2025</p>
+          <div class="log__body">
             <h3>ACM Winter School: Digital Twins</h3>
-            <p>Hosted at RBU for fifty students selected across the country, with experts from TCS Research,
-            IIT Bombay, IIT Delhi and Monash University. Featured in Tarun Bharat and Navrashtra.</p>
+            <p>Hosted at RBU for fifty students selected across the country, with experts from
+            TCS Research, IIT Bombay, IIT Delhi and Monash University. Covered by Tarun Bharat
+            and Navrashtra.</p>
           </div>
         </li>
-        <li class="tx">
-          <div class="tx__body">
-            <span class="tx__date mono">12 Oct 2025</span>
+        <li class="log__item">
+          <p class="log__date">12 October 2025</p>
+          <div class="log__body">
             <h3>Prajwalan — ignition of ideas</h3>
-            <p>The chapter's Diwali DSA contest on Unstop: two hours, gold/silver/bronze certificates
-            from ACM. Its own site: <a href="https://acm-prajwalan.vercel.app/">acm-prajwalan.vercel.app</a>.</p>
+            <p>The chapter's Diwali DSA contest on Unstop: two hours, certificates from ACM.
+            It has its own site, <a href="https://acm-prajwalan.vercel.app/">acm-prajwalan.vercel.app</a>.</p>
           </div>
         </li>
-        <li class="tx">
-          <div class="tx__body">
-            <span class="tx__date mono">2025–26 session</span>
+        <li class="log__item">
+          <p class="log__date">2025–26 session</p>
+          <div class="log__body">
             <h3>Technofrenzy 3.0 — Shadows of Hollywood</h3>
             <p>The flagship event, three acts in: Lights Out &amp; Logic On, Ultimate Bid Battle,
-            and Fast &amp; Furious — a code circuit.</p>
+            and Fast &amp; Furious, a code circuit.</p>
           </div>
         </li>
       </ul>
     </div>
   </section>
 
-  <!-- ==================== crew ==================== -->
-  <section class="sect sect--crew" id="crew">
+  <!-- ============ crew ============ -->
+  <section class="sect" id="crew">
     <div class="wrap">
-      <div class="plate-label" aria-hidden="true">plate 05 · crew</div>
-      <h2>The crew</h2>
-      <p class="sect__sub">Faculty coordinators on record with the university, an eighteen-member student
-      crew, and one empty socket waiting for your slot.</p>
-      <ul class="crew__grid">
-        <li class="crew-card">
-          <span class="crew-card__slot" aria-hidden="true"></span>
+      <header class="sect__head">
+        <h2>The crew</h2>
+        <p class="sect__note">Two faculty coordinators on the university record, and eighteen students
+        who do the work.</p>
+      </header>
+      <ul class="people">
+        <li>
           <h3>Dr. Devishree Naidu</h3>
-          <p>Faculty coordinator, ACM RBU Student Chapter</p>
+          <p>Faculty coordinator</p>
         </li>
-        <li class="crew-card">
-          <span class="crew-card__slot" aria-hidden="true"></span>
+        <li>
           <h3>Prof. Dhanashree Junghare</h3>
-          <p>Faculty coordinator, ACM RBU Student Chapter</p>
+          <p>Faculty coordinator</p>
         </li>
-        <li class="crew-card crew-card--wide">
-          <span class="crew-card__slot" aria-hidden="true"></span>
+        <li>
           <h3>The student crew</h3>
-          <p>Eighteen members run the machine — sessions, sponsorships, media and the events you see on
-          this page. Their full roster goes on the Crew page when it ships.</p>
+          <p>Eighteen members run sessions, sponsorships, media and the events on this page.
+          The full roster goes up when the crew page ships.</p>
         </li>
       </ul>
     </div>
   </section>
 
-  <!-- ==================== join ==================== -->
+  <!-- ============ join ============ -->
   <section class="sect sect--join" id="join">
-    <div class="wrap join__inner">
-      <h2>Plug into the machine.</h2>
-      <p class="sect__sub">The chapter runs on students. Show up to a workshop, bring an event idea, or just
-      follow the feed until you're ready.</p>
-      <ul class="join__channels">
-        <li><a class="btn btn--key" href="https://www.instagram.com/acm_rbu/" rel="noopener" target="_blank">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.3" fill="currentColor"/></svg>
-          @acm_rbu on Instagram</a></li>
-        <li><a class="btn btn--key btn--ghost" href="https://www.linkedin.com/company/acm-rbu-student-chapter" rel="noopener" target="_blank">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.2 10.5v6M8.2 7.9v.1M12 16.5v-3.6c0-1.3.9-2.3 2.2-2.3s2.2 1 2.2 2.3v3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Follow on LinkedIn</a></li>
-        <li><a class="btn btn--gag" href="mailto:info@rbustudentchapter.acm.org">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.4" y="5.4" width="17.2" height="13.2" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.6 7.4 12 13l7.4-5.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          info@rbustudentchapter.acm.org</a></li>
-      </ul>
+    <div class="wrap">
+      <h2>Come build with us.</h2>
+      <p class="sect__note">The chapter is students. Turn up to a workshop, pitch an event, or
+      write the first line of the next thing we ship.</p>
+      <div class="join__links">
+        <a class="btn btn--inverse" href="mailto:info@rbustudentchapter.acm.org">info@rbustudentchapter.acm.org</a>
+        <a class="join__text" href="https://www.instagram.com/acm_rbu/" rel="noopener" target="_blank">@acm_rbu on Instagram</a>
+        <a class="join__text" href="https://www.linkedin.com/company/acm-rbu-student-chapter" rel="noopener" target="_blank">The chapter on LinkedIn</a>
+      </div>
     </div>
   </section>
 </main>
@@ -287,39 +279,34 @@ document.documentElement.classList.add("js")</script>
 <footer class="foot">
   <div class="wrap foot__grid">
     <div class="foot__brand">
-      <img src="media/acm-logo-200.png" alt="" width="44" height="44">
-      <div>
-        <strong>ACM RBU Student Chapter</strong>
-        <p>Association for Computing Machinery, at Ramdeobaba University, Nagpur. Assembled 18 October 2018.</p>
-      </div>
+      <img src="media/acm-logo-200.png" alt="" width="38" height="38">
+      <p>ACM RBU Student Chapter<br>
+      Association for Computing Machinery<br>
+      Ramdeobaba University, Nagpur</p>
     </div>
     <nav class="foot__col" aria-label="Sections">
-      <h4>On this page</h4>
-      <a href="#manifest">Manifest</a>
-      <a href="#record">The record</a>
-      <a href="#programs">Modules</a>
-      <a href="#moments">Transmissions</a>
+      <a href="#record">Record</a>
+      <a href="#work">What we run</a>
+      <a href="#events">Events</a>
       <a href="#crew">Crew</a>
       <a href="#join">Join</a>
     </nav>
-    <nav class="foot__col" aria-label="Chapters and links">
-      <h4>Machines we look up to</h4>
-      <a href="https://www.acm.org" rel="noopener" target="_blank">ACM — the world's computing society</a>
+    <nav class="foot__col" aria-label="Elsewhere">
+      <a href="https://www.acm.org" rel="noopener" target="_blank">ACM</a>
       <a href="https://in.linkedin.com/company/indiaacm" rel="noopener" target="_blank">ACM India</a>
-      <a href="https://rbunagpur.in/computer-science-engineering-and-emerging-technologies/acm/" rel="noopener" target="_blank">ACM in the university record</a>
-      <a href="https://acm-prajwalan.vercel.app/" rel="noopener" target="_blank">Prajwalan event site</a>
+      <a href="https://acm-prajwalan.vercel.app/" rel="noopener" target="_blank">Prajwalan</a>
+      <a href="https://rbunagpur.in/computer-science-engineering-and-emerging-technologies/acm/" rel="noopener" target="_blank">The university record</a>
     </nav>
-    <div class="foot__col">
-      <h4>In assembly</h4>
-      <span class="foot__soon">Events archive</span>
-      <span class="foot__soon">Gallery</span>
-      <span class="foot__soon">Crew page</span>
-      <p>Wired up one section at a time.</p>
+    <div class="foot__col foot__col--soon">
+      <p>Still being wired up</p>
+      <span>Events archive</span>
+      <span>Gallery</span>
+      <span>Crew page</span>
     </div>
   </div>
   <div class="wrap foot__legal">
-    <span>© 2026 ACM RBU Student Chapter.</span>
-    <span>Site assembled and maintained by the chapter's student crew.</span>
+    <span>© 2026 ACM RBU Student Chapter</span>
+    <span>Assembled and maintained by the chapter's student crew</span>
   </div>
 </footer>
 

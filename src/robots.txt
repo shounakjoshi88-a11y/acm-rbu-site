@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://acm-rbu-site.vercel.app/sitemap.xml

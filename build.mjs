@@ -15,7 +15,7 @@ const SRC = path.join(SITE, "src");
 const DIST = path.join(SITE, "dist");
 
 const log = (...a) => console.log(...a);
-const FILES = ["index.html", "site.css", "fonts.css", "machine.js"];
+const FILES = ["index.html", "site.css", "fonts.css", "machine.js", "robots.txt", "sitemap.xml"];
 
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
@@ -26,7 +26,22 @@ for (const f of FILES) {
     console.error(`missing ${from}`);
     process.exit(1);
   }
-  fs.copyFileSync(from, path.join(DIST, f));
+  if (f === "index.html") {
+    /* inline the mainboard drawing: one request fewer, and it can be
+       styled and animated by the page's own CSS */
+    const boardPath = path.join(SRC, "board.svg");
+    if (!fs.existsSync(boardPath)) {
+      console.error("missing src/board.svg — run node tools/board.mjs");
+      process.exit(1);
+    }
+    const html = fs.readFileSync(from, "utf8").replace(
+      "<!--BOARD-->",
+      fs.readFileSync(boardPath, "utf8").trim()
+    );
+    fs.writeFileSync(path.join(DIST, f), html, "utf8");
+  } else {
+    fs.copyFileSync(from, path.join(DIST, f));
+  }
   log("copy", f);
 }
 

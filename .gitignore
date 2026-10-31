@@ -11,3 +11,9 @@ node_modules/
 .vercel/
 *.log
 .DS_Store
+
+.vercel
+.env*
+
+# local QA screenshots (second pass)
+shots2/
