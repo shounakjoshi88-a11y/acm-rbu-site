@@ -470,9 +470,11 @@ void main() {
     }
   }
 
-  function begin(from) {
-    /* one click is one whole pass: forward out, then the gradient home */
-    run = { dir: 0, t: 0, from: from === undefined ? XMIN : from, hold: 0 };
+  function begin() {
+    /* one click is one whole pass: forward out across every layer, then the
+       gradient home. it always covers the full graph, so a click near the far
+       edge is not a click that shows nothing */
+    run = { dir: 0, t: 0, from: XMIN, hold: 0 };
     setMode(0);
   }
 
