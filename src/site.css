@@ -1,28 +1,28 @@
 /* ==========================================================================
    ACM RBU Student Chapter
 
-   The system is Modal's: near-black, one weight of type at two sizes, pill
-   buttons, hairline rows, and a single accent. The accent is the chapter's
-   own blue — copper, not their green — so the machine and the mark agree.
+   The system is Modal's, run light: paper white, one weight of type at two
+   sizes, pill buttons, hairline rows, and a single accent. The accent is the
+   chapter's own blue, so the mark and the ink agree.
    ========================================================================== */
 
 :root {
-  --bg: #0e1116;
-  --bg-deep: #0a0d11;
-  --panel: #151a21;
+  --bg: #ffffff;
+  --bg-deep: #f5f7fb;
+  --panel: #f7f9fc;
 
-  --fg: #e8edf3;
-  --fg-2: #98a4b2;
-  --fg-3: #63707e;
+  --fg: #0b0f14;
+  --fg-2: #4c5869;
+  --fg-3: #78859a;
 
-  --ink: #08101a;
+  --ink: #0b0f14;
 
-  --accent: #3280e7;
-  --accent-lit: #6aa8f5;
-  --accent-deep: #0f74c5;
+  --accent: #2f6df6;
+  --accent-lit: #1b56d8;
+  --accent-deep: #0f3fa0;
 
-  --line: rgba(255, 255, 255, 0.09);
-  --line-soft: rgba(255, 255, 255, 0.055);
+  --line: rgba(11, 15, 20, 0.13);
+  --line-soft: rgba(11, 15, 20, 0.07);
 
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-mono: "Fira Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
@@ -100,7 +100,7 @@ a {
   color: var(--accent-lit);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(106, 168, 245, 0.4);
+  text-decoration-color: rgba(27, 86, 216, 0.35);
 }
 
 a:hover {
@@ -108,8 +108,8 @@ a:hover {
 }
 
 ::selection {
-  background: rgba(50, 128, 231, 0.35);
-  color: #fff;
+  background: rgba(47, 109, 246, 0.18);
+  color: var(--fg);
 }
 
 :focus-visible {
@@ -151,7 +151,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(14, 17, 22, 0.78);
+  background: rgba(255, 255, 255, 0.82);
   border-bottom: 1px solid var(--line-soft);
   backdrop-filter: saturate(160%) blur(14px);
   -webkit-backdrop-filter: saturate(160%) blur(14px);
@@ -212,7 +212,7 @@ a:hover {
 
 .nav__links a:hover {
   color: var(--fg);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(11, 15, 20, 0.05);
 }
 
 /* --------------------------------------------------------------- buttons -- */
@@ -250,7 +250,7 @@ a:hover {
 }
 
 .btn--quiet {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(11, 15, 20, 0.03);
   border-color: var(--line);
   color: var(--fg);
 }
@@ -258,25 +258,25 @@ a:hover {
 /* over the field a quiet button frosts what is behind it, so the glyphs
    never read as noise inside the label */
 .hero .btn--quiet {
-  background: rgba(22, 28, 36, 0.55);
-  -webkit-backdrop-filter: blur(14px) saturate(1.15);
-  backdrop-filter: blur(14px) saturate(1.15);
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
 }
 
 .btn--quiet:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(11, 15, 20, 0.06);
+  border-color: rgba(11, 15, 20, 0.2);
   transform: translateY(-1px);
 }
 
 .btn--inverse {
   background: var(--fg);
   border-color: var(--fg);
-  color: var(--ink);
+  color: #fff;
 }
 
 .btn--inverse:hover {
-  background: #fff;
+  background: #1b232e;
   transform: translateY(-1px);
 }
 
@@ -291,7 +291,7 @@ a:hover {
 .hero {
   position: relative;
   background:
-    radial-gradient(70% 46% at 50% 88%, rgba(50, 128, 231, 0.16), rgba(14, 17, 22, 0) 72%),
+    radial-gradient(70% 50% at 50% 74%, rgba(47, 109, 246, 0.09), rgba(255, 255, 255, 0) 70%),
     var(--bg);
 }
 
@@ -400,6 +400,14 @@ a:hover {
     height: auto;
     margin-top: 0;
   }
+
+  /* the mark rises from the bottom of the stage; it dissolves before it ever
+     reaches the headline */
+  html.js .stage,
+  html.js .stage-glow {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 44%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 44%);
+  }
 }
 
 .stage {
@@ -408,6 +416,17 @@ a:hover {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* the same frame at a fifth of the size, blown back up: ink bleeding into paper */
+.stage-glow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .stage-poster {
@@ -425,21 +444,37 @@ html.no-js .hero__pin {
   padding-bottom: var(--s8);
 }
 
-html.no-js .stage {
+html.no-js .stage,
+html.no-gl .stage {
+  display: none;
+}
+
+html.no-gl .stage-glow {
   display: none;
 }
 
 /* no canvas: the poster sets its own height */
-html.no-js .stage-wrap {
+html.no-js .stage-wrap,
+html.no-gl .stage-wrap {
   height: auto;
   margin-top: var(--s5);
+  /* nothing is layered under the poster here, so drop the stacking context and
+     let it multiply straight onto the hero's wash */
+  z-index: auto;
 }
 
-html.no-js .stage-poster {
+html.no-js .stage-poster,
+html.no-gl .stage-poster {
   display: block;
   width: 100%;
   height: auto;
-  /* the poster is a flat plate; fade its top edge into the hero's glow */
+  /* the poster is a wide plate: cap it so the whole mark stays on screen */
+  max-height: 54vh;
+  object-fit: contain;
+  /* the poster is white paper: multiply drops the paper out and leaves the ink
+     sitting on the hero's own wash */
+  mix-blend-mode: multiply;
+  /* fade its top edge into the hero's wash */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 7%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 7%);
 }
@@ -496,7 +531,7 @@ html.no-js .stage-poster {
   line-height: 1;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
-  background: linear-gradient(180deg, #ffffff 0%, #b9cde6 100%);
+  background: linear-gradient(180deg, #0b0f14 0%, #56719c 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -627,7 +662,7 @@ html.no-js .stage-poster {
   border-radius: var(--r);
   background: var(--panel);
   border: 1px solid var(--line);
-  box-shadow: 0 20px 40px -28px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 18px 36px -26px rgba(11, 15, 20, 0.45);
 }
 
 /* ------------------------------------------------------------------ crew -- */
@@ -666,7 +701,7 @@ html.no-js .stage-poster {
 /* ------------------------------------------------------------------ join -- */
 
 .sect--join {
-  background: linear-gradient(180deg, #1d63c4 0%, #0f4a99 100%);
+  background: linear-gradient(180deg, #2f6df6 0%, #1247b8 100%);
   border-top-color: transparent;
   padding-block: clamp(88px, 10vw, 148px);
   color: #fff;
@@ -835,6 +870,12 @@ html.no-js .hero__copy > * {
     animation: none;
   }
 
+  /* nothing is pinned here, so the hero is a plain column and the stage is a
+     slab under the copy: keep it short enough that both fit one screen */
+  html.js .stage-wrap {
+    height: clamp(300px, 44vh, 460px);
+  }
+
   .btn {
     transition: none;
   }
@@ -939,8 +980,10 @@ html.no-js .hero__copy > * {
     width: 100%;
   }
 
+  /* the mark needs a tall stage on a phone, or the stack of plates collapses
+     into a handful of glyphs */
   .stage-wrap {
-    height: 40vh;
+    height: 52vh;
     margin-top: var(--s2);
   }
 
