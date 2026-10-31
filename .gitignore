@@ -1,0 +1,13 @@
+# build output — Vercel runs `node build.mjs`
+dist/
+
+# local QA screenshots
+shots/
+
+# scraped source images (copies live in src/media)
+research/imgs/
+
+node_modules/
+.vercel/
+*.log
+.DS_Store
