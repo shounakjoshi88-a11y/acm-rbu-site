@@ -24,10 +24,13 @@
 <link rel="icon" type="image/png" href="media/acm-logo-200.png">
 <link rel="apple-touch-icon" href="media/acm-logo-200.png">
 <script>document.documentElement.classList.remove("no-js");
-document.documentElement.classList.add("js")</script>
+document.documentElement.classList.add("js");
+try{if(localStorage.getItem("acm-theme")==="ink"){document.documentElement.classList.add("ink")}}catch(e){}</script>
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="ink.css">
 <script type="module" src="scene.js"></script>
+<script src="theme.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -48,6 +51,10 @@ document.documentElement.classList.add("js")</script>
       <a href="#crew">Crew</a>
       <a href="net.html">Network</a>
     </nav>
+    <div class="themes" role="group" aria-label="Colour theme">
+      <button class="themes__btn" type="button" data-theme-set="paper">Paper</button>
+      <button class="themes__btn" type="button" data-theme-set="ink">Ink</button>
+    </div>
     <a class="btn btn--primary btn--sm" href="#join">Join</a>
   </div>
 </header>

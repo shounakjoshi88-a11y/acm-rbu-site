@@ -227,6 +227,7 @@ uniform vec2 uRes;
 uniform float uCell;
 uniform sampler2D uTex;
 uniform ivec2 uTS;
+uniform float uInk;
 
 out vec4 o;
 
@@ -257,12 +258,21 @@ float glyph(vec2 g, float lvl, float h, float aa) {
   return 1.0 - smoothstep(-aa, aa, d);
 }
 
-/* paper, wash, blue, ink */
+/* paper, wash, blue, ink — and on the ink set, the same four stops read from
+   the other side: the densest part of the mark is the brightest, so it sits on
+   a dark page the way the blue sits on a white one */
 vec3 ramp(float l) {
   vec3 c0 = vec3(0.80, 0.86, 0.98);
   vec3 c1 = vec3(0.66, 0.77, 0.96);
   vec3 c2 = vec3(0.22, 0.44, 0.88);
   vec3 c3 = vec3(0.04, 0.13, 0.35);
+
+  if (uInk > 0.5) {
+    c0 = vec3(0.09, 0.14, 0.28);
+    c1 = vec3(0.16, 0.28, 0.58);
+    c2 = vec3(0.37, 0.56, 0.97);
+    c3 = vec3(0.82, 0.91, 1.00);
+  }
 
   return l < 0.35 ? mix(c0, c1, l / 0.35)
        : l < 0.7 ? mix(c1, c2, (l - 0.35) / 0.35)
@@ -290,8 +300,12 @@ void main() {
     al = glyph(gv, t.r, h, aa);
     c = ramp(t.r);
   } else if (t.g > 0.01) {
-    al = glyph(gv, t.g, h, aa) * 0.1;
-    c = mix(vec3(0.72, 0.80, 0.95), vec3(0.42, 0.56, 0.88), t.g);
+    /* the dim echoes trail the mark: pale wash on paper, faint blue in the dark */
+    float amb = uInk > 0.5 ? 0.16 : 0.1;
+    al = glyph(gv, t.g, h, aa) * amb;
+    c = uInk > 0.5
+      ? mix(vec3(0.06, 0.09, 0.19), vec3(0.17, 0.27, 0.52), t.g)
+      : mix(vec3(0.72, 0.80, 0.95), vec3(0.42, 0.56, 0.88), t.g);
   }
 
   o = vec4(c * al, al);
@@ -354,6 +368,11 @@ function boot(gl) {
   let anchorY = 0.7;
   let TW = 2;
   let TH = 2;
+
+  /* which set the ramp is read against; the switch flips it without a reload */
+  let inkMode = document.documentElement.classList.contains("ink");
+  let lastTT = 0;
+  let lastP = 0;
 
   function resize() {
     const r = canvas.getBoundingClientRect();
@@ -431,6 +450,8 @@ function boot(gl) {
 
   function render(tt, p) {
     const w = weights(tt);
+    lastTT = tt;
+    lastP = p;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, TW, TH);
@@ -454,6 +475,7 @@ function boot(gl) {
     gl.uniform1f(P2.u.uCell, CELL);
     gl.uniform1i(P2.u.uTex, 0);
     gl.uniform2i(P2.u.uTS, TW, TH);
+    gl.uniform1f(P2.u.uInk, inkMode ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     /* the halo is just the same frame at a fifth of the size, blown back up by
@@ -530,6 +552,13 @@ function boot(gl) {
       else start();
     });
   }
+
+  /* the switch redraws the frame in place: the field keeps its time, only the
+     ramp changes side */
+  document.addEventListener("themechange", () => {
+    inkMode = document.documentElement.classList.contains("ink");
+    render(lastTT, lastP);
+  });
 
   /* the poster renderer, and a handle for the QA harness */
   window.__stage = {

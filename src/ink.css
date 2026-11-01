@@ -1,0 +1,85 @@
+/* ==========================================================================
+   The ink set.
+
+   One block of tokens, loaded by both pages after site.css. Nothing here is a
+   second design: it is the same system with the paper taken away, so the ink
+   has to carry the figure at the same contrast the blue carries on white.
+
+   `html.ink` is the only switch. The theme script adds it before first paint,
+   so nothing flashes, and every surface below is a token the base sheet already
+   reads - no component is duplicated to get here.
+   ========================================================================== */
+
+html.ink {
+  color-scheme: dark;
+
+  --bg: #06080d;
+  --bg-deep: #080b12;
+  --panel: #0a0e16;
+
+  --fg: #eaf1fd;
+  --fg-2: #9aa8be;
+  --fg-3: #78849b;
+
+  --accent: #4a83ff;
+  --accent-lit: #7ea6ff;
+  --accent-deep: #2f6df6;
+
+  --line: rgba(234, 241, 253, 0.15);
+  --line-soft: rgba(234, 241, 253, 0.075);
+
+  --nav-bg: rgba(6, 8, 13, 0.72);
+  --nav-hover-bg: rgba(234, 241, 253, 0.08);
+  --sel-bg: rgba(90, 140, 255, 0.3);
+  --link-line: rgba(126, 166, 255, 0.42);
+
+  --btn-quiet-bg: rgba(234, 241, 253, 0.055);
+  --btn-quiet-bg-hover: rgba(234, 241, 253, 0.11);
+  --btn-quiet-line-hover: rgba(234, 241, 253, 0.24);
+  --btn-quiet-hero-bg: rgba(10, 14, 22, 0.58);
+  --btn-primary-bg: #2f6df6;
+  --btn-primary-hover: #2a63e8;
+  --btn-shadow: 0 0 0 1px rgba(90, 140, 255, 0.35), 0 14px 40px -14px rgba(74, 131, 255, 0.95);
+  --btn-shadow-hover: 0 0 0 1px rgba(120, 165, 255, 0.45), 0 18px 46px -14px rgba(74, 131, 255, 1);
+  --btn-inverse-bg: #eaf1fd;
+  --btn-inverse-fg: #06080d;
+  --btn-inverse-hover: #ffffff;
+
+  --hero-wash: radial-gradient(70% 50% at 50% 74%, rgba(47, 109, 246, 0.17), rgba(6, 8, 13, 0) 70%);
+  --glow-opacity: 0.72;
+
+  --stats-a: #eaf1fd;
+  --stats-b: #6f8ab8;
+  --card-shadow: 0 20px 40px -26px rgba(0, 0, 0, 0.95);
+
+  --join-a: #16307a;
+  --join-b: #070f2c;
+}
+
+/* the logotypes are drawn for paper, so they get lifted rather than inverted */
+html.ink .brand__logo {
+  filter: brightness(1.35) saturate(1.1);
+}
+
+html.ink .foot__brand img {
+  filter: brightness(1.3);
+}
+
+/* Without WebGL the poster stands in for the field. It is blue ink on white
+   paper; invert plus a half turn of hue keeps the mark blue and puts the paper
+   under it, instead of multiplying white onto a black page. */
+html.ink .stage-poster {
+  mix-blend-mode: screen;
+  filter: invert(1) hue-rotate(180deg) saturate(0.9);
+}
+
+/* the section that closes the page is the one place the accent stays a slab,
+   so in ink it is the deep end of the same blue rather than a full-brightness
+   block in the middle of a dark page */
+html.ink .sect--join {
+  border-top: 1px solid var(--line-soft);
+}
+
+html.ink .sect--join :focus-visible {
+  outline-color: #fff;
+}

@@ -4,29 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#06080d">
-<title>The network — ACM RBU Student Chapter</title>
-<meta name="description" content="A live picture of a neural network: two thousand edges, attention moving between them, and the gradient travelling back. Built by the ACM Student Chapter at Ramdeobaba University, Nagpur.">
+<title>ACM RBU Student Chapter — in ink</title>
+<meta name="description" content="The official ACM Student Chapter at Ramdeobaba University, Nagpur: hands-on workshops, hackathons, mentorship and projects, assembled by students since 18 October 2018.">
 <link rel="canonical" href="https://acm-rbu-site.vercel.app/net.html">
 <meta property="og:site_name" content="ACM RBU Student Chapter">
-<meta property="og:title" content="The network — attention, drawn as it happens">
-<meta property="og:description" content="Two thousand edges, seven layers, a signal you can send yourself. A forward pass, attention, and the gradient coming back.">
+<meta property="og:title" content="ACM RBU Student Chapter — in ink">
+<meta property="og:description" content="Where computing is built, not just studied. The chapter, in its dark edition.">
 <meta property="og:url" content="https://acm-rbu-site.vercel.app/net.html">
 <meta property="og:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_IN">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The network — attention, drawn as it happens">
-<meta name="twitter:description" content="A forward pass, attention, and the gradient coming back, drawn live.">
+<meta name="twitter:title" content="ACM RBU Student Chapter — in ink">
+<meta name="twitter:description" content="Where computing is built, not just studied.">
 <meta name="twitter:image" content="https://acm-rbu-site.vercel.app/media/og-cover.jpg">
 <link rel="icon" type="image/png" href="media/acm-logo-200.png">
 <link rel="apple-touch-icon" href="media/acm-logo-200.png">
 <script>document.documentElement.classList.remove("no-js");
 document.documentElement.classList.add("js");
-try{var th=localStorage.getItem("acm-theme");if(th==="paper"){document.documentElement.classList.remove("ink");document.documentElement.classList.add("paper")}}catch(e){}</script>
+try{if(localStorage.getItem("acm-theme")==="paper"){document.documentElement.classList.remove("ink")}}catch(e){}</script>
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="ink.css">
 <link rel="stylesheet" href="net.css">
 <script type="module" src="net.js"></script>
+<script src="theme.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -41,85 +43,233 @@ try{var th=localStorage.getItem("acm-theme");if(th==="paper"){document.documentE
       </span>
     </a>
     <nav class="nav__links" aria-label="Sections">
-      <a href="./#record">Record</a>
-      <a href="./#work">What we run</a>
-      <a href="./#events">Events</a>
-      <a href="./#crew">Crew</a>
+      <a href="#record">Record</a>
+      <a href="#work">What we run</a>
+      <a href="#events">Events</a>
+      <a href="#crew">Crew</a>
       <a href="net.html" aria-current="page">Network</a>
     </nav>
-    <button class="nav__theme" type="button" data-theme aria-label="Switch to the paper theme">
-      <span data-theme-label>Paper</span>
-    </button>
+    <div class="themes" role="group" aria-label="Colour theme">
+      <button class="themes__btn" type="button" data-theme-set="paper">Paper</button>
+      <button class="themes__btn" type="button" data-theme-set="ink">Ink</button>
+    </div>
   </div>
 </header>
 
 <main id="main">
 
-  <!-- ============ the field: a graph you can send a signal through ============ -->
+  <!-- ============ hero: the chapter, drawn as a network ============ -->
   <section class="nethero" id="field">
-    <canvas class="nethero__stage" data-net aria-hidden="true"></canvas>
-    <div class="nethero__veil" aria-hidden="true"></div>
+    <div class="netfield" aria-hidden="true">
+      <canvas class="netfield__wires" data-net></canvas>
+      <canvas class="netfield__chrome" data-chrome></canvas>
+    </div>
 
     <div class="wrap nethero__copy">
-      <p class="eyebrow">A working picture</p>
-      <h1>Attention, drawn<br>as it happens.</h1>
-      <p class="nethero__lead">Two thousand edges, seven layers, and a signal you can send
-      yourself. This is the page's own model of a forward pass, of attention moving between
-      wires, and of the gradient coming back the way it came.</p>
+      <p class="eyebrow">ACM RBU Student Chapter</p>
+      <h1>A chapter,<br>wired together.</h1>
+      <p class="nethero__lead">Workshops, hackathons and late-night builds at Ramdeobaba University,
+      Nagpur — drawn as the thing our students spend their time learning to make.</p>
       <div class="nethero__cta">
-        <button class="btn btn--primary" type="button" data-fire>Fire a pass</button>
-        <a class="btn btn--quiet" href="#how">How it works</a>
+        <a class="btn btn--primary" href="#join">Join the chapter</a>
+        <button class="btn btn--quiet" type="button" data-fire>Send a signal</button>
       </div>
-      <p class="nethero__hint">Click anywhere in the field to send a signal through it.</p>
     </div>
 
     <div class="nethero__hud" aria-hidden="true">
       <span class="hud__dot" data-hud-dot></span>
-      <span data-hud-mode>forward pass</span>
+      <span data-hud-mode>at rest</span>
       <span class="hud__sep">/</span>
-      <span data-hud-count>2,328 edges</span>
+      <span data-hud-count>1,636 edges</span>
     </div>
   </section>
 
-  <!-- ============ how it works ============ -->
-  <section class="sect" id="how">
+  <!-- ============ the record ============ -->
+  <section class="sect" id="record">
     <div class="wrap">
-      <div class="sect__head">
-        <h2>What you are looking at</h2>
-        <p>Three things happen on those wires every time you fire a pass. Nothing moves
-        through the graph until you do.</p>
-      </div>
-
-      <div class="netgrid">
-        <article class="netcard">
-          <p class="netcard__n">01</p>
-          <h3>Forward</h3>
-          <p>Every edge carries an activation from one layer to the next. The bright heads are
-          the ones moving right now; the dim lines are the ones waiting their turn. Seven
-          layers, fourteen nodes in the first and last, forty-four in the middle.</p>
-        </article>
-        <article class="netcard">
-          <p class="netcard__n">02</p>
-          <h3>Attention</h3>
-          <p>Not every wire matters equally. At any moment a handful of edges take most of the
-          signal, and which handful it is changes from pass to pass. That is the whole trick:
-          the network decides where to look, then looks there harder.</p>
-        </article>
-        <article class="netcard">
-          <p class="netcard__n">03</p>
-          <h3>Backward</h3>
-          <p>When a pass ends the direction reverses and the field turns warm. Gradients travel
-          the same edges home, and every edge that carried a lot of signal on the way out
-          carries a lot of blame on the way back.</p>
-        </article>
-      </div>
-
-      <p class="netnote">This is a visual model, not a trained network. Every weight on the
-      page is a hash of its own index — no data, no training, nothing to be accurate about.
-      The structure is real; the numbers are decoration.</p>
+      <header class="sect__head">
+        <h2>The record</h2>
+        <p class="sect__note">Six numbers from the chapter's own file. Nothing rounded up.</p>
+      </header>
+      <ol class="stats">
+        <li>
+          <span class="stats__n">1300</span>
+          <h3>INNOVANZA'25</h3>
+          <p>Participants in the national project competition, 14 May 2025.</p>
+        </li>
+        <li>
+          <span class="stats__n">300</span>
+          <h3>AICWiC 2020</h3>
+          <p>Delegates at ACM India's celebration of women in computing, 5 September 2020.</p>
+        </li>
+        <li>
+          <span class="stats__n">629</span>
+          <h3>One session</h3>
+          <p>Students in a single sitting for Essential Platforms for CSE, 28 November 2024.</p>
+        </li>
+        <li>
+          <span class="stats__n">350</span>
+          <h3>Dr. Aditya Abhyankar</h3>
+          <p>In the hall for the ACM Distinguished Speaker, 14 May 2025.</p>
+        </li>
+        <li>
+          <span class="stats__n">50</span>
+          <h3>Winter School</h3>
+          <p>Students selected nationally for Digital Twins, hosted at RBU, December 2025.</p>
+        </li>
+        <li>
+          <span class="stats__n">18</span>
+          <h3>The crew</h3>
+          <p>Students who run the chapter right now, per its LinkedIn roster.</p>
+        </li>
+      </ol>
     </div>
   </section>
 
+  <!-- ============ what we run ============ -->
+  <section class="sect" id="work">
+    <div class="wrap">
+      <header class="sect__head">
+        <h2>What we run</h2>
+        <p class="sect__note">Five program lines, each with the last thing it actually did.</p>
+      </header>
+      <ul class="grid6">
+        <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="var(--bg)"/><circle cx="15" cy="12" r="2" fill="var(--bg)"/><circle cx="7" cy="17" r="2" fill="var(--bg)"/></svg>
+          <h3>Workshops and bootcamps</h3>
+          <p>Hands-on learning in AI/ML, cybersecurity, web development and open source.</p>
+          <p class="grid6__last">Latest: Fundamentals of Deep Learning with NVIDIA, March 2024.</p>
+        </li>
+        <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 4h10v3a5 5 0 0 1-10 0z"/><path d="M7 5H4v1a3 3 0 0 0 3 3M17 5h3v1a3 3 0 0 1-3 3"/><path d="M12 12v4M9 20h6M10 16h4v4h-4z"/></svg>
+          <h3>Hackathons and contests</h3>
+          <p>Competitive programming that sharpens how you think under a clock.</p>
+          <p class="grid6__last">Latest: Prajwalan, a DSA contest with ₹12,000 in prizes, October 2025.</p>
+        </li>
+        <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+          <h3>Talks and guest lectures</h3>
+          <p>Sessions with engineers, alumni and researchers who do the work.</p>
+          <p class="grid6__last">Latest: a principal engineer at Autodesk on cracking MNC interviews, March 2025.</p>
+        </li>
+        <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
+          <h3>Research and paper writing</h3>
+          <p>Academic writing, and sending students to conferences and journals.</p>
+          <p class="grid6__last">Latest: the ACM Winter School on Digital Twins, December 2025.</p>
+        </li>
+        <li>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21c0-7 4-11 9-11-1 7-4 11-9 11z"/><path d="M12 21C9 16 6 14 3 14c1 5 4 7 9 7z"/><path d="M12 21v-5"/></svg>
+          <h3>Tech for good</h3>
+          <p>Technology pointed at problems outside the campus gate.</p>
+          <p class="grid6__last">Latest: ECOTHON, the sustainability hackathon with REEF RBU.</p>
+        </li>
+        <li class="grid6__open">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke-dasharray="2 3"/></svg>
+          <h3>Something new</h3>
+          <p>An empty slot this year's crew hasn't filled yet. It usually goes to whoever asks first.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ events ============ -->
+  <section class="sect" id="events">
+    <div class="wrap">
+      <header class="sect__head">
+        <h2>Recent events</h2>
+        <p class="sect__note">The last five things the chapter ran, from its own announcements.</p>
+      </header>
+      <ul class="log">
+        <li class="log__item">
+          <p class="log__date">October 2026</p>
+          <div class="log__body">
+            <h3>Technical Interview Readiness Program</h3>
+            <p>Crew members invigilated the HackerRank skill-assessment round of this
+            placement-readiness program, with Lambence Pvt. Ltd. and the CDPC Cell.</p>
+          </div>
+          <img src="media/post-2026-10-11-b.jpg" alt="The chapter crew with faculty and guests at the Technical Interview Readiness Program" width="800" height="600" loading="lazy">
+        </li>
+        <li class="log__item">
+          <p class="log__date">2026</p>
+          <div class="log__body">
+            <h3>ECOTHON — Code for a Greener Tomorrow</h3>
+            <p>A sustainability hackathon with REEF RBU: environment-first problem statements,
+            judged by Hemant Barapatre, CEO of Cluematrix Technologies.</p>
+          </div>
+          <img src="media/post-2026-02-04-a.jpg" alt="The crew with guests after ECOTHON, in front of the event board" width="800" height="600" loading="lazy">
+        </li>
+        <li class="log__item">
+          <p class="log__date">15–24 December 2025</p>
+          <div class="log__body">
+            <h3>ACM Winter School: Digital Twins</h3>
+            <p>Hosted at RBU for fifty students selected across the country, with experts from
+            TCS Research, IIT Bombay, IIT Delhi and Monash University. Covered by Tarun Bharat
+            and Navrashtra.</p>
+          </div>
+          <img src="media/post-2025-12-winter.jpg" alt="Faculty and guests at the head table during the ACM Winter School 2025 inauguration" width="400" height="250" loading="lazy">
+        </li>
+        <li class="log__item">
+          <p class="log__date">12 October 2025</p>
+          <div class="log__body">
+            <h3>Prajwalan — ignition of ideas</h3>
+            <p>The chapter's Diwali DSA contest on Unstop: two hours, certificates from ACM.
+            It has its own site, <a href="https://acm-prajwalan.vercel.app/">acm-prajwalan.vercel.app</a>.</p>
+          </div>
+          <img src="media/post-2025-10-prajwalan.jpg" alt="The Prajwalan announcement card: a lit diya and the words Ignition of Ideas" width="800" height="420" loading="lazy">
+        </li>
+        <li class="log__item">
+          <p class="log__date">2025–26 session</p>
+          <div class="log__body">
+            <h3>Technofrenzy 3.0 — Shadows of Hollywood</h3>
+            <p>The flagship event, three acts in: Lights Out &amp; Logic On, Ultimate Bid Battle,
+            and Fast &amp; Furious, a code circuit.</p>
+          </div>
+          <img src="media/post-2026-01-technofrenzy.jpg" alt="The crew with a giant ACM letter cut-out at Technofrenzy 3.0" width="800" height="600" loading="lazy">
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ crew ============ -->
+  <section class="sect" id="crew">
+    <div class="wrap">
+      <header class="sect__head">
+        <h2>The crew</h2>
+        <p class="sect__note">Two faculty coordinators on the university record, and eighteen
+        students who do the work.</p>
+      </header>
+      <ul class="people">
+        <li>
+          <h3>Dr. Devishree Naidu</h3>
+          <p>Faculty coordinator</p>
+        </li>
+        <li>
+          <h3>Prof. Dhanashree Junghare</h3>
+          <p>Faculty coordinator</p>
+        </li>
+        <li>
+          <h3>The student crew</h3>
+          <p>Eighteen members run sessions, sponsorships, media and the events on this page.
+          The full roster goes up when the crew page ships.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ join ============ -->
+  <section class="sect sect--join" id="join">
+    <div class="wrap join">
+      <h2>Come build with us.</h2>
+      <p class="join__note">The chapter is students. Turn up to a workshop, pitch an event, or
+      write the first line of the next thing we ship.</p>
+      <div class="join__links">
+        <a class="btn btn--inverse" href="mailto:info@rbustudentchapter.acm.org">info@rbustudentchapter.acm.org</a>
+        <a class="join__text" href="https://www.instagram.com/acm_rbu/" rel="noopener" target="_blank">@acm_rbu on Instagram</a>
+        <a class="join__text" href="https://www.linkedin.com/company/acm-rbu-student-chapter" rel="noopener" target="_blank">The chapter on LinkedIn</a>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
@@ -131,11 +281,12 @@ try{var th=localStorage.getItem("acm-theme");if(th==="paper"){document.documentE
       Ramdeobaba University, Nagpur</p>
     </div>
     <nav class="foot__col" aria-label="Sections">
-      <a href="./#record">Record</a>
-      <a href="./#work">What we run</a>
-      <a href="./#events">Events</a>
-      <a href="./#crew">Crew</a>
-      <a href="./#join">Join</a>
+      <a href="#record">Record</a>
+      <a href="#work">What we run</a>
+      <a href="#events">Events</a>
+      <a href="#crew">Crew</a>
+      <a href="#join">Join</a>
+      <a href="net.html">The network</a>
     </nav>
     <nav class="foot__col" aria-label="Elsewhere">
       <a href="https://www.acm.org" rel="noopener" target="_blank">ACM</a>
@@ -149,6 +300,10 @@ try{var th=localStorage.getItem("acm-theme");if(th==="paper"){document.documentE
       <span>Gallery</span>
       <span>Crew page</span>
     </div>
+  </div>
+  <div class="wrap foot__legal">
+    <span>© 2026 ACM RBU Student Chapter</span>
+    <span>Assembled and maintained by the chapter's student crew</span>
   </div>
 </footer>
 </body>

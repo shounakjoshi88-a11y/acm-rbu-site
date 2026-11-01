@@ -1,24 +1,27 @@
 /* ==========================================================================
-   The network page — a graph you can send a signal through.
+   The network page — a model, drawn as a model.
 
-   Built in raw WebGL2, same as the home page's mark: no three.js, no library.
-   One instanced draw call for every segment of every edge, one for the nodes.
+   Six layers, left to right, each one a framed column: a header with the layer's
+   node count and activation, then its nodes stacked down the frame with their
+   own tags. Every node in one column is wired to every node in the next, which
+   is what makes the dense X-mesh between the frames; the whole graph is 100
+   nodes and 1,636 edges.
 
-   The graph is fixed at load: seven layers, 208 nodes, 2,328 edges. Each edge
-   is a cubic that bows off the straight line, and every vertex is displaced by
-   a low-frequency function of its own position, so the wires breathe and drift
-   without ever coming apart — the warp is continuous across shared endpoints.
+   Two canvases, because two things want different tools. The wires are WebGL:
+   one instanced draw call for every segment of every edge, coloured per edge
+   from a pink / violet / blue palette, with a white shimmer riding each pulse.
+   The structure on top — frames, headers, nodes, tags — is Canvas2D, because
+   text in a tool made for a diagram should be actual text.
 
-   Two things travel those wires. Ambient pulses run forever, each edge at its
-   own speed, and a per-edge attention weight decides how much of the signal
-   that edge is allowed to carry. On top of that a single band sweeps the whole
-   field: left to right on a forward pass, right to left when the direction
-   reverses. Clicking sends one yourself.
+   A single band sweeps the layer axis: left to right on a forward pass, right to
+   left when the gradient comes home. Nothing moves until you click.
    ========================================================================== */
 
-const canvas = document.querySelector("[data-net]");
 const root = document.documentElement;
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const canvas = document.querySelector("[data-net]");
+const chrome = document.querySelector("[data-chrome]");
 
 const gl = canvas
   ? canvas.getContext("webgl2", {
@@ -36,71 +39,102 @@ if (!gl) {
 }
 
 function boot(gl) {
-  /* ------------------------------------------------------------ the graph -- */
+  const c2d = chrome ? chrome.getContext("2d") : null;
 
-  const WIDTHS = [14, 28, 40, 44, 40, 28, 14];
-  const OUT = 12; /* edges leaving each node */
-  const SEG = 6; /* straight pieces per edge */
+  /* ------------------------------------------------------------ the model -- */
 
-  /* a seeded generator, so the graph is the same on every load */
-  let seed = 20261031;
-  const rnd = () => {
-    seed = (seed * 1664525 + 1013904223) % 4294967296;
-    return seed / 4294967296;
-  };
+  /* The drawing is the model, so these numbers are the ones printed in the
+     summary below it: 14 + 18 + 22 + 22 + 18 + 6 nodes, and every possible
+     connection between one column and the next. */
+  const LAYERS = [
+    { title: "Features", short: "X", prefix: "X", n: 14, act: "raw" },
+    { title: "Hidden 1", short: "H1", prefix: "A", n: 18, act: "ReLU" },
+    { title: "Hidden 2", short: "H2", prefix: "B", n: 22, act: "ReLU" },
+    { title: "Hidden 3", short: "H3", prefix: "C", n: 22, act: "tanh" },
+    { title: "Hidden 4", short: "H4", prefix: "D", n: 18, act: "ReLU" },
+    { title: "Output", short: "O", prefix: "O", n: 6, act: "softmax" },
+  ];
+
+  const SPACING = 0.6; /* graph units between column centres */
+  const ROW = 0.044; /* graph units between nodes in a column */
+  const PANEL_HALF = 0.175; /* half a column's width, for fitting the drawing */
+  const WIN_X = 2.06; /* a phone shows this much of the drawing's width */
 
   const nodes = [];
-  const layerStart = [];
+  const layers = [];
 
-  for (let L = 0; L < WIDTHS.length; L++) {
-    layerStart.push(nodes.length);
-    const w = WIDTHS[L];
-    const t = L / (WIDTHS.length - 1);
-    /* the middle of the stack is the widest, the ends taper */
-    const spread = 0.44 + 0.56 * Math.sin(Math.PI * (0.16 + 0.68 * t));
+  LAYERS.forEach((cfg, i) => {
+    const span = (cfg.n - 1) * ROW;
+    const L = {
+      ...cfg,
+      index: i,
+      x: (i - (LAYERS.length - 1) / 2) * SPACING,
+      span,
+      start: nodes.length,
+    };
+    layers.push(L);
 
-    for (let j = 0; j < w; j++) {
-      const f = w === 1 ? 0.5 : j / (w - 1);
+    for (let k = 0; k < cfg.n; k++) {
       nodes.push({
-        x: -1.35 + 2.7 * t + (rnd() - 0.5) * 0.07,
-        y: (f - 0.5) * 2 * spread + (rnd() - 0.5) * 0.11,
-        s: rnd(),
+        x: L.x,
+        y: -span / 2 + k * ROW,
+        layer: i,
+        tag: cfg.prefix + (k + 1),
+        seed: (i * 131 + k * 17) % 97,
       });
     }
+  });
+
+  /* No frames, no cards: six columns of nodes and the wires between them, the
+     way a network is actually drawn. The only structure on top is a caption
+     over each column. */
+  const MAXSPAN = Math.max(...layers.map((L) => L.span));
+  /* one caption line, above every wire in the drawing — wires fan up to the
+     tallest column, so the row has to clear that, not each column's own top */
+  const CAPTION_Y0 = -MAXSPAN / 2 - 0.115;
+  let CAPTION_Y = CAPTION_Y0;
+  /* from the caption line down to the last node: what the field has to hold */
+  const GY = MAXSPAN / 2 - CAPTION_Y;
+
+  for (const L of layers) {
+    L.top = -MAXSPAN / 2;
+    L.bottom = MAXSPAN / 2;
   }
 
+  /* centre the drawing's real extent — the captions above, the last node
+     below — rather than its origin */
+  const CY = (CAPTION_Y + MAXSPAN / 2) / 2;
+
+  for (const L of layers) {
+    L.top -= CY;
+    L.bottom -= CY;
+  }
+  for (const n of nodes) n.y -= CY;
+  CAPTION_Y -= CY;
+
   const edges = [];
-  for (let L = 0; L < WIDTHS.length - 1; L++) {
-    const a0 = layerStart[L];
-    const b0 = layerStart[L + 1];
-    const n1 = WIDTHS[L + 1];
-    for (let i = 0; i < WIDTHS[L]; i++) {
-      for (let k = 0; k < OUT; k++) {
-        edges.push([a0 + i, b0 + Math.floor(rnd() * n1)]);
+  for (let i = 0; i < layers.length - 1; i++) {
+    const a = layers[i];
+    const b = layers[i + 1];
+    for (let p = 0; p < a.n; p++) {
+      for (let q = 0; q < b.n; q++) {
+        edges.push([a.start + p, b.start + q]);
       }
     }
   }
 
-  /* every edge, tessellated into segments. One instance per segment. */
+  /* each edge is a polyline of SEG pieces; one instance per piece */
+  const SEG = 3;
   const inst = new Float32Array(edges.length * SEG * 7);
   let o = 0;
 
   for (let e = 0; e < edges.length; e++) {
     const A = nodes[edges[e][0]];
     const B = nodes[edges[e][1]];
-    const dx = B.x - A.x;
-    const dy = B.y - A.y;
-    const len = Math.hypot(dx, dy) || 1e-4;
 
-    /* the bow is what stops the wires reading as a wiring diagram. keep it
-       shallow: past about a third of the span the silhouette turns into a comb */
-    const bow = (rnd() - 0.5) * len * 0.24;
-    const nx = -dy / len;
-    const ny = dx / len;
-    const c1x = A.x + dx * 0.33 + nx * bow;
-    const c1y = A.y + dy * 0.33 + ny * bow;
-    const c2x = A.x + dx * 0.67 + nx * bow;
-    const c2y = A.y + dy * 0.67 + ny * bow;
+    /* almost straight: the mesh has to read as connections, not as wire art.
+       A hair of bow keeps a stack of edges from collapsing into one line. */
+    const bow = (((e * 2654435761) % 1000) / 1000 - 0.5) * 0.012;
 
     let px = A.x;
     let py = A.y;
@@ -108,8 +142,8 @@ function boot(gl) {
     for (let s = 0; s < SEG; s++) {
       const t = (s + 1) / SEG;
       const m = 1 - t;
-      const qx = m * m * m * A.x + 3 * m * m * t * c1x + 3 * m * t * t * c2x + t * t * t * B.x;
-      const qy = m * m * m * A.y + 3 * m * m * t * c1y + 3 * m * t * t * c2y + t * t * t * B.y;
+      const qx = A.x + (B.x - A.x) * t;
+      const qy = A.y + (B.y - A.y) * t + Math.sin(Math.PI * t) * bow;
 
       inst[o++] = px;
       inst[o++] = py;
@@ -122,13 +156,6 @@ function boot(gl) {
       px = qx;
       py = qy;
     }
-  }
-
-  const nodeData = new Float32Array(nodes.length * 3);
-  for (let i = 0; i < nodes.length; i++) {
-    nodeData[i * 3] = nodes[i].x;
-    nodeData[i * 3 + 1] = nodes[i].y;
-    nodeData[i * 3 + 2] = nodes[i].s;
   }
 
   /* --------------------------------------------------------------- shaders -- */
@@ -144,7 +171,6 @@ uniform vec2 uRes;
 uniform float uT;
 uniform float uZoom;
 uniform vec2 uPar;
-uniform mat2 uRot;
 uniform float uBandP;
 uniform float uBandA;
 uniform float uMode;
@@ -153,17 +179,17 @@ out float vU;
 out float vSide;
 out float vId;
 out float vT;
-out float vX;
 
 float h1(float n) { return fract(sin(n * 127.1) * 43758.5453); }
 
-/* a continuous displacement: adjacent segments share an endpoint, so the
-   polyline stays joined no matter how far it drifts */
+/* Continuous displacement: neighbouring segments share the point they meet at,
+   so a polyline stays joined however far it drifts. Kept small - a diagram
+   should breathe, not dissolve. */
 vec2 warp(vec2 p) {
   float t = uT * 0.21;
-  p += vec2(sin(p.y * 3.3 + t * 1.7), cos(p.x * 2.9 - t * 1.3)) * 0.042;
-  p += vec2(sin(p.y * 8.2 - t * 2.3), cos(p.x * 7.1 + t * 1.9)) * 0.012;
-  p += vec2(sin(p.y * 15.7 + t * 3.1), cos(p.x * 13.3 - t * 2.7)) * 0.004;
+  p += vec2(sin(p.y * 3.3 + t * 1.7), cos(p.x * 2.9 - t * 1.3)) * 0.013;
+  p += vec2(sin(p.y * 8.2 - t * 2.3), cos(p.x * 7.1 + t * 1.9)) * 0.0045;
+  p += vec2(sin(p.y * 15.7 + t * 3.1), cos(p.x * 13.3 - t * 2.7)) * 0.0016;
   return p;
 }
 
@@ -172,39 +198,23 @@ void main() {
   vSide = aCorner.y;
   vId = aId;
   vT = uT;
-  /* the layer axis, so the sweep is one wall of light crossing the graph
-     rather than a separate flash travelling along every wire at once */
-  vX = mix(aP0.x, aP1.x, vU);
 
-  /* the ribbon has to be wide enough to hold a halo, so the same pulse the
-     fragment shader lights is computed here to size the quad */
   float a = h1(aId);
   float b = h1(aId + 37.1);
-  float c = h1(aId + 211.7);
-  float att = pow(0.5 + 0.5 * sin(uT * 0.33 + c * 6.2831), 3.0);
+
   float u = uMode > 0.5 ? 1.0 - vU : vU;
-  float speed = 0.10 + 0.26 * b;
+  float speed = 0.09 + 0.22 * b;
   float head = fract(uT * speed + a * 3.0);
   float d = abs(u - head);
   d = min(d, 1.0 - d);
-  float pulse = exp(-d * d * 420.0);
-  float head2 = fract(uT * speed * 1.63 + a * 5.0 + 0.37);
+  float pulse = exp(-d * d * 900.0);
+  float head2 = fract(uT * speed * 1.61 + a * 5.0 + 0.37);
   float d2 = abs(u - head2);
   d2 = min(d2, 1.0 - d2);
-  pulse += 0.45 * exp(-d2 * d2 * 700.0);
+  pulse += 0.4 * exp(-d2 * d2 * 1400.0);
 
-  /* the burst: a wall of light crossing the graph, layer by layer, with a tail
-     behind it so the direction of travel is legible. narrow on purpose - a wide
-     band across two thousand edges goes white */
-  float lag = uMode > 0.5 ? vX - uBandP : uBandP - vX;
-  float band =
-    (exp(-pow((vX - uBandP) * 3.4, 2.0)) +
-     0.45 * step(0.0, lag) * exp(-pow(max(lag, 0.0) * 1.6, 2.0))) * uBandA;
-  float attn = 0.25 + 0.75 * att;
-  float glow = pulse * (0.15 + 0.85 * att);
-
-  vec2 p0 = warp(uRot * aP0);
-  vec2 p1 = warp(uRot * aP1);
+  vec2 p0 = warp(aP0);
+  vec2 p1 = warp(aP1);
 
   vec2 ctr = uRes * 0.5 + uPar;
   vec2 s0 = ctr + p0 * uZoom;
@@ -214,8 +224,9 @@ void main() {
   float len = max(length(dsv), 1e-4);
   vec2 nrm = vec2(-dsv.y, dsv.x) / len;
 
-  float h = h1(aId);
-  float halfW = 0.45 + 0.6 * h * h + 4.2 * min(glow, 1.1) + 1.2 * band * attn;
+  /* the quad has to be wide enough to hold the halo the fragment shader
+     lights, so the same pulse is computed here just to size it */
+  float halfW = 0.5 + 0.45 * h1(aId + 5.0) + 3.4 * min(pulse, 1.1);
 
   vec2 pos = mix(s0, s1, aCorner.x) + nrm * aCorner.y * halfW;
   gl_Position = vec4(pos / uRes * 2.0 - 1.0, 0.0, 1.0);
@@ -228,16 +239,17 @@ in float vU;
 in float vSide;
 in float vId;
 in float vT;
-in float vX;
 
 uniform vec3 uBase;
-uniform vec3 uHot;
-uniform vec3 uCold;
-uniform float uBandP;
-uniform float uBandA;
-uniform float uMode;
+uniform vec3 uHueA;
+uniform vec3 uHueB;
+uniform vec3 uHueC;
+uniform vec3 uBackA;
+uniform vec3 uBackB;
 uniform float uAlpha;
 uniform float uLive;
+uniform float uMode;
+uniform float uStill;
 
 out vec4 o;
 
@@ -248,89 +260,55 @@ void main() {
   float b = h1(vId + 37.1);
   float c = h1(vId + 211.7);
 
-  /* attention: a slow per-edge weight, cubed so a few wires dominate */
+  /* attention: a slow per-edge weight, cubed so a few wires carry most of it */
   float att = pow(0.5 + 0.5 * sin(vT * 0.33 + c * 6.2831), 3.0);
 
-  float u = uMode > 0.5 ? 1.0 - vU : vU;
-
-  float speed = 0.10 + 0.26 * b;
+  float u = vU;
+  float speed = 0.09 + 0.22 * b;
   float head = fract(vT * speed + a * 3.0);
   float d = abs(u - head);
   d = min(d, 1.0 - d);
-  float pulse = exp(-d * d * 420.0);
+  float pulse = exp(-d * d * 900.0);
 
-  float head2 = fract(vT * speed * 1.63 + a * 5.0 + 0.37);
+  float head2 = fract(vT * speed * 1.61 + a * 5.0 + 0.37);
   float d2 = abs(u - head2);
   d2 = min(d2, 1.0 - d2);
-  pulse += 0.45 * exp(-d2 * d2 * 700.0);
+  pulse += 0.4 * exp(-d2 * d2 * 1400.0);
 
-  /* the burst: one wall of light crossing the graph, layer by layer */
-  float lag = uMode > 0.5 ? vX - uBandP : uBandP - vX;
-  float band =
-    (exp(-pow((vX - uBandP) * 3.4, 2.0)) +
-     0.45 * step(0.0, lag) * exp(-pow(max(lag, 0.0) * 1.6, 2.0))) * uBandA;
-  float attn = 0.25 + 0.75 * att;
+  /* One hue per wire, fixed for the life of the page: the mesh is blue, violet
+     and pink at once, the way a weight matrix looks when it is lit. Which of
+     the three is decided per edge, so the same wire keeps its colour. */
+  float k = mod(vId, 3.0);
+  vec3 hue = k < 1.0 ? uHueA : (k < 2.0 ? uHueB : uHueC);
 
-  float glow = pulse * (0.15 + 0.85 * att) * uLive;
-  vec3 hot = mix(uHot, uCold, uMode);
-  vec3 col = mix(uBase, hot, clamp(glow * 1.15 + band * attn * 0.9, 0.0, 1.0));
+  /* Coming home, the whole field turns over to pink and violet. */
+  vec3 back = mix(uBackA, uBackB, clamp(k * 0.5, 0.0, 1.0));
+  hue = mix(hue, back, uMode);
 
-  /* the quad is wide; the hairline is its core, the halo is its skirt */
+  float glow = pulse * (0.18 + 0.82 * att) * uLive * mix(1.0, 0.45, uStill);
+
+  /* at rest a wire still keeps most of its own hue, so the mesh is never one
+     colour even when nothing is moving */
+  vec3 col = mix(uBase, hue, 0.62 + 0.38 * clamp(glow, 0.0, 1.0));
+
+  /* the head of every pulse burns white; the tail keeps its hue. A still frame
+     keeps the lit mesh but not the travelling heads, so nothing looks frozen
+     mid-flight. */
+  float shimmer = pow(clamp(pulse, 0.0, 1.0), 1.6) * uLive * (1.0 - uStill);
+  col = mix(col, vec3(1.0), clamp(shimmer * 0.85, 0.0, 1.0));
+
   float w = 1.0 - abs(vSide);
-  float core = smoothstep(0.10, 0.72, w);
-  float halo = pow(max(w, 0.0), 1.7);
+  float core = smoothstep(0.12, 0.75, w);
+  float halo = pow(max(w, 0.0), 1.6);
 
   float alpha = clamp(
-    uAlpha * (0.05 + 0.20 * att) * core +
-    min(glow, 1.2) * halo * 0.55 +
-    band * attn * halo * 0.18,
+    uAlpha * (0.09 + 0.30 * att) * core +
+    0.6 * min(glow, 1.2) * halo,
     0.0,
     1.0
   );
 
   o = vec4(col * alpha, alpha);
-}`;
-
-  const VS_NODE = `#version 300 es
-in vec2 aPos;
-in float aSeed;
-
-uniform vec2 uRes;
-uniform float uZoom;
-uniform vec2 uPar;
-uniform mat2 uRot;
-uniform float uT;
-uniform float uDpr;
-
-out float vSeed;
-
-void main() {
-  vSeed = aSeed;
-
-  float t = uT * 0.21;
-  vec2 p = uRot * aPos;
-  p += vec2(sin(p.y * 3.3 + t * 1.7), cos(p.x * 2.9 - t * 1.3)) * 0.042;
-  p += vec2(sin(p.y * 8.2 - t * 2.3), cos(p.x * 7.1 + t * 1.9)) * 0.012;
-  p += vec2(sin(p.y * 15.7 + t * 3.1), cos(p.x * 13.3 - t * 2.7)) * 0.004;
-
-  vec2 s = uRes * 0.5 + uPar + p * uZoom;
-  gl_Position = vec4(s / uRes * 2.0 - 1.0, 0.0, 1.0);
-  gl_PointSize = (3.0 + 3.4 * fract(aSeed * 7.31)) * uDpr;
-}`;
-
-  const FS_NODE = `#version 300 es
-precision highp float;
-
-in float vSeed;
-uniform vec3 uNode;
-out vec4 o;
-
-void main() {
-  vec2 g = gl_PointCoord * 2.0 - 1.0;
-  float r2 = dot(g, g);
-  if (r2 > 1.0) discard;
-  float a = (1.0 - r2) * (0.34 + 0.46 * fract(vSeed * 3.71));
-  o = vec4(uNode * a, a);
 }`;
 
   function program(vs, fs) {
@@ -357,9 +335,6 @@ void main() {
   }
 
   const PE = program(VS_EDGE, FS_EDGE);
-  const PN = program(VS_NODE, FS_NODE);
-
-  /* -------------------------------------------------------------- buffers -- */
 
   const cornerBuf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
@@ -373,86 +348,125 @@ void main() {
   gl.bindBuffer(gl.ARRAY_BUFFER, instBuf);
   gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
 
-  const nodeBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, nodeBuf);
-  gl.bufferData(gl.ARRAY_BUFFER, nodeData, gl.STATIC_DRAW);
-
-  const nodeCount = nodes.length;
   const instCount = edges.length * SEG;
 
   /* ------------------------------------------------------------ the palette -- */
 
+  /* Paper is the same drawing printed on white: the hues go darker and the
+     blend goes normal, because additive light on paper is just a smudge. */
   const PAL = {
     ink: {
-      base: [0.26, 0.40, 0.78],
-      hot: [0.44, 0.80, 1.0],
-      cold: [1.0, 0.66, 0.36],
-      node: [0.62, 0.80, 1.0],
-      alpha: 0.95,
+      base: [0.40, 0.46, 0.72],
+      hueA: [0.30, 0.62, 1.0],
+      hueB: [0.62, 0.42, 1.0],
+      hueC: [1.0, 0.38, 0.78],
+      backA: [1.0, 0.32, 0.58],
+      backB: [0.72, 0.34, 1.0],
+      alpha: 0.9,
       additive: true,
+      title: "#e2eaff",
+      meta: "#93a4c6",
+      node: "#f4f8ff",
+      tag: "#a7b8d8",
+      grid: "rgba(126, 166, 255, 0.06)",
+      halo: "rgba(6, 8, 13, 0.9)",
     },
     paper: {
-      base: [0.50, 0.62, 0.86],
-      hot: [0.10, 0.34, 0.92],
-      cold: [0.88, 0.36, 0.10],
-      node: [0.18, 0.40, 0.90],
-      alpha: 0.85,
+      base: [0.34, 0.40, 0.58],
+      hueA: [0.16, 0.38, 0.88],
+      hueB: [0.46, 0.22, 0.84],
+      hueC: [0.86, 0.18, 0.5],
+      backA: [0.88, 0.16, 0.36],
+      backB: [0.62, 0.2, 0.78],
+      alpha: 4.0,
       additive: false,
+      title: "#0b0f14",
+      meta: "#6b7889",
+      node: "#101823",
+      tag: "#22304a",
+      grid: "rgba(11, 15, 20, 0.05)",
+      halo: "rgba(255, 255, 255, 0.92)",
     },
   };
 
   const themeName = () => (root.classList.contains("ink") ? "ink" : "paper");
 
   function applyBlend() {
-    const pal = PAL[themeName()];
-    if (pal.additive) gl.blendFunc(gl.ONE, gl.ONE);
+    if (PAL[themeName()].additive) gl.blendFunc(gl.ONE, gl.ONE);
     else gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    if (c2d) c2d.clearRect(0, 0, chrome.width, chrome.height);
   }
 
   gl.enable(gl.BLEND);
-  applyBlend();
   gl.clearColor(0, 0, 0, 0);
 
   /* --------------------------------------------------------------- sizing -- */
 
   let W = 2;
   let H = 2;
-  let zoom = 200;
+  let CW = 2;
+  let CH = 2;
   let dprNow = 1;
-  let rot = new Float32Array([1, 0, 0, 1]);
+  let zoom = 300; /* device px per graph unit */
+  let zoomCss = 150;
+
+  /* the graph's own extent, for fitting it to any window */
+  const GX = (LAYERS.length - 1) * SPACING + PANEL_HALF * 2;
 
   function resize() {
     const r = canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     dprNow = dpr;
 
-    W = Math.max(2, Math.round(r.width * dpr));
-    H = Math.max(2, Math.round(r.height * dpr));
+    CW = Math.max(2, Math.round(r.width));
+    CH = Math.max(2, Math.round(r.height));
+    W = Math.max(2, Math.round(CW * dpr));
+    H = Math.max(2, Math.round(CH * dpr));
+
     if (canvas.width !== W) canvas.width = W;
     if (canvas.height !== H) canvas.height = H;
     gl.viewport(0, 0, W, H);
 
-    /* a phone gets the layers running top to bottom, not squeezed sideways */
-    const portrait = W < H * 0.92;
-    rot = portrait ? new Float32Array([0, 1, -1, 0]) : new Float32Array([1, 0, 0, 1]);
-    zoom = portrait ? Math.min(W / 2.05, H / 3.0) : Math.min(W / 3.1, H / 2.3);
+    if (chrome) {
+      if (chrome.width !== W) chrome.width = W;
+      if (chrome.height !== H) chrome.height = H;
+    }
+
+    /* The field is a wide band, so the fit is led by the height: the drawing
+       has to sit inside it with air above and below, and still reach the
+       sides. A phone cannot hold six columns at a legible size, so it holds a
+       window across the middle of the same drawing instead, and the network
+       runs off both edges. */
+    if (CW < 720) {
+      zoom = Math.min(W / (WIN_X * 1), H / (GY * 1.06));
+    } else {
+      const padX = 1.06;
+      const padY = 1.12;
+      zoom = Math.min(W / (GX * padX), H / (GY * padY));
+    }
+    zoomCss = zoom / dpr;
   }
 
   /* ---------------------------------------------------------------- state -- */
 
-  const XMIN = -1.55;
-  const XMAX = 1.55;
+  let XMIN = 0;
+  let XMAX = 0;
+  for (const L of layers) {
+    XMIN = Math.min(XMIN, L.x - PANEL_HALF);
+    XMAX = Math.max(XMAX, L.x + PANEL_HALF);
+  }
+
   let t = 0;
   let last = 0;
   let raf = 0;
   let running = false;
 
-  let mode = 0; /* 0 forward, 1 backward */
-  let run = null; /* { dir, t, from, hold } while a pass is in flight */
+  let mode = 0;
+  let run = null;
 
   let bandP = XMIN;
   let bandA = 0;
-  let live = 0.34;
+  let live = 0.3;
 
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 
@@ -471,10 +485,9 @@ void main() {
   }
 
   function fire() {
-    /* one click is one whole pass: forward out across every layer, then the
-       gradient home. it always covers the full graph, so a click near the far
-       edge is not a click that shows nothing */
-    run = { dir: 0, t: 0, from: XMIN, hold: 0 };
+    /* one click is one whole pass: out through every layer, then the gradient
+       home along the same wires */
+    run = { dir: 0, t: 0, hold: 0 };
     setMode(0);
   }
 
@@ -484,14 +497,12 @@ void main() {
     "pointermove",
     (e) => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      pointer.tx = (e.clientX / window.innerWidth - 0.5) * 30 * dpr;
-      pointer.ty = (e.clientY / window.innerHeight - 0.5) * 20 * dpr;
+      pointer.tx = (e.clientX / window.innerWidth - 0.5) * 26 * dpr;
+      pointer.ty = (e.clientY / window.innerHeight - 0.5) * 18 * dpr;
     },
     { passive: true }
   );
 
-  /* the copy sits on top of the canvas, so the whole field listens, not the
-     canvas: only links and buttons are allowed to do their own thing */
   const hero = document.querySelector(".nethero");
   if (hero && !reduced) {
     hero.addEventListener("pointerdown", (e) => {
@@ -505,12 +516,129 @@ void main() {
 
   /* ---------------------------------------------------------------- render -- */
 
+  /* the same displacement as the shader, in JS, so a node sits exactly where its
+     wires meet it */
+  function warpJS(x, y, tt) {
+    const tm = tt * 0.21;
+    x += Math.sin(y * 3.3 + tm * 1.7) * 0.013;
+    y += Math.cos(x * 2.9 - tm * 1.3) * 0.013;
+    x += Math.sin(y * 8.2 - tm * 2.3) * 0.0045;
+    y += Math.cos(x * 7.1 + tm * 1.9) * 0.0045;
+    x += Math.sin(y * 15.7 + tm * 3.1) * 0.0016;
+    y += Math.cos(x * 13.3 - tm * 2.7) * 0.0016;
+    return [x, y];
+  }
+
+  const MONO = '11px "Fira Mono", ui-monospace, "Cascadia Mono", Consolas, monospace';
+  const MONO_SM = '9px "Fira Mono", ui-monospace, "Cascadia Mono", Consolas, monospace';
+
+  function drawChrome(tt) {
+    if (!c2d) return;
+
+    const pal = PAL[themeName()];
+    const cx = CW / 2 + pointer.x / dprNow;
+    const cy = CH / 2 + pointer.y / dprNow;
+    const row = ROW * zoomCss;
+    const showTags = row >= 12;
+    const showMeta = CW > 760;
+
+    c2d.setTransform(dprNow, 0, 0, dprNow, 0, 0);
+    c2d.clearRect(0, 0, CW, CH);
+
+    const px = (gx) => cx + gx * zoomCss;
+    const py = (gy) => cy + gy * zoomCss;
+
+    /* --- the grid the model sits on ------------------------------------- */
+    c2d.strokeStyle = pal.grid;
+    c2d.lineWidth = 1;
+    c2d.beginPath();
+    for (let gx = -1.8; gx <= 1.801; gx += 0.2725) {
+      c2d.moveTo(px(gx), 0);
+      c2d.lineTo(px(gx), CH);
+    }
+    for (let gy = -0.9; gy <= 0.901; gy += 0.15) {
+      c2d.moveTo(0, py(gy));
+      c2d.lineTo(CW, py(gy));
+    }
+    c2d.stroke();
+
+    /* --- one caption per column ----------------------------------------- */
+    c2d.textAlign = "center";
+    c2d.textBaseline = "alphabetic";
+    /* the caption line sits above the wires, but a halo keeps it crisp: drawn
+       twice, once for the halo and once for the ink */
+    c2d.shadowColor = pal.halo;
+    c2d.shadowBlur = 8;
+
+    for (let pass = 0; pass < 2; pass++) {
+      for (const L of layers) {
+        const x = px(L.x);
+
+        c2d.fillStyle = pal.title;
+        c2d.font = showMeta ? MONO : MONO_SM;
+        c2d.fillText(showMeta ? L.title : L.short, x, py(CAPTION_Y));
+
+        if (showMeta) {
+          c2d.fillStyle = pal.meta;
+          c2d.font = MONO_SM;
+          c2d.fillText(L.n + " · " + L.act, x, py(CAPTION_Y) + 14);
+        }
+      }
+      c2d.shadowBlur = 0;
+    }
+
+    /* --- nodes and their tags -------------------------------------------- */
+    /* the dot never grows into its neighbours: it is bounded by the row pitch
+       as well as by the zoom, so a narrow field keeps six clean columns */
+    const r = Math.max(1.2, Math.min(0.0135 * zoomCss, row * 0.26));
+
+    for (const n of nodes) {
+      const [wx, wy] = warpJS(n.x, n.y, tt);
+      const sx = cx + wx * zoomCss;
+      const sy = cy + wy * zoomCss;
+
+      const L = layers[n.layer];
+      /* the band lights the column it is crossing; the dot answers it */
+      const band = bandA * Math.exp(-Math.pow((bandP - L.x) * 3.1, 2));
+      const heat = Math.min(1, band * 1.4);
+
+      c2d.beginPath();
+      c2d.arc(sx, sy, r, 0, Math.PI * 2);
+      c2d.fillStyle = heat > 0.05
+        ? (mode ? "rgba(255, 176, 214, " : "rgba(198, 226, 255, ") + (0.7 + 0.3 * heat) + ")"
+        : pal.node;
+      c2d.fill();
+    }
+
+    /* The tags sit in the middle of the wire field, so they get a halo in the
+       page's own colour instead of a plate — and, like the captions, they are
+       painted twice: halo first, ink on top. */
+    if (showTags) {
+      c2d.font = MONO_SM;
+      c2d.textAlign = "left";
+      c2d.textBaseline = "middle";
+
+      const spots = nodes.map((n) => {
+        const [wx, wy] = warpJS(n.x, n.y, tt);
+        return [cx + wx * zoomCss + r + 4, cy + wy * zoomCss + 0.5];
+      });
+
+      c2d.fillStyle = pal.tag;
+      c2d.shadowColor = pal.halo;
+      c2d.shadowBlur = 6;
+      nodes.forEach((n, i) => c2d.fillText(n.tag, spots[i][0], spots[i][1]));
+
+      c2d.shadowBlur = 0;
+      nodes.forEach((n, i) => c2d.fillText(n.tag, spots[i][0], spots[i][1]));
+    }
+
+    c2d.shadowBlur = 0;
+  }
+
   function draw(tt) {
     const pal = PAL[themeName()];
 
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    /* --- edges --- */
     gl.useProgram(PE.p);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
@@ -539,41 +667,22 @@ void main() {
     gl.uniform1f(PE.u.uT, tt);
     gl.uniform1f(PE.u.uZoom, zoom);
     gl.uniform2f(PE.u.uPar, pointer.x, pointer.y);
-    gl.uniformMatrix2fv(PE.u.uRot, false, rot);
     gl.uniform3fv(PE.u.uBase, pal.base);
-    gl.uniform3fv(PE.u.uHot, pal.hot);
-    gl.uniform3fv(PE.u.uCold, pal.cold);
+    gl.uniform3fv(PE.u.uHueA, pal.hueA);
+    gl.uniform3fv(PE.u.uHueB, pal.hueB);
+    gl.uniform3fv(PE.u.uHueC, pal.hueC);
+    gl.uniform3fv(PE.u.uBackA, pal.backA);
+    gl.uniform3fv(PE.u.uBackB, pal.backB);
     gl.uniform1f(PE.u.uBandP, bandP);
     gl.uniform1f(PE.u.uBandA, bandA);
     gl.uniform1f(PE.u.uMode, mode);
     gl.uniform1f(PE.u.uLive, live);
+    gl.uniform1f(PE.u.uStill, reduced ? 1 : 0);
     gl.uniform1f(PE.u.uAlpha, pal.alpha);
 
     gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, instCount);
 
-    /* --- nodes --- */
-    gl.useProgram(PN.p);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, nodeBuf);
-    const aPos = PN.a("aPos");
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 12, 0);
-    gl.vertexAttribDivisor(aPos, 0);
-
-    const aSeed = PN.a("aSeed");
-    gl.enableVertexAttribArray(aSeed);
-    gl.vertexAttribPointer(aSeed, 1, gl.FLOAT, false, 12, 8);
-    gl.vertexAttribDivisor(aSeed, 0);
-
-    gl.uniform2f(PN.u.uRes, W, H);
-    gl.uniform1f(PN.u.uZoom, zoom);
-    gl.uniform2f(PN.u.uPar, pointer.x, pointer.y);
-    gl.uniformMatrix2fv(PN.u.uRot, false, rot);
-    gl.uniform1f(PN.u.uT, tt);
-    gl.uniform1f(PN.u.uDpr, dprNow);
-    gl.uniform3fv(PN.u.uNode, pal.node);
-
-    gl.drawArrays(gl.POINTS, 0, nodeCount);
+    drawChrome(tt);
   }
 
   function frame(now) {
@@ -586,19 +695,17 @@ void main() {
 
     if (run) {
       if (run.hold > 0) {
-        /* a beat at the end of the forward pass, then the gradient returns */
         run.hold -= dt;
         if (run.hold <= 0) {
           run.dir = 1;
           run.t = 0;
-          run.from = XMAX;
           setMode(1);
         }
       } else {
-        run.t += dt / 1.7;
+        run.t += dt / 1.9;
         if (run.t >= 1) {
           bandA = 0;
-          if (run.dir === 0) run.hold = 0.55;
+          if (run.dir === 0) run.hold = 0.6;
           else {
             run = null;
             setMode(0);
@@ -606,8 +713,8 @@ void main() {
         } else {
           bandP =
             run.dir === 0
-              ? run.from + (XMAX - run.from) * run.t
-              : run.from - (run.from - XMIN) * run.t;
+              ? XMIN + (XMAX - XMIN) * run.t
+              : XMAX - (XMAX - XMIN) * run.t;
           bandA = Math.sin(Math.PI * run.t);
         }
       }
@@ -616,7 +723,7 @@ void main() {
     pointer.x += (pointer.tx - pointer.x) * Math.min(1, dt * 2.4);
     pointer.y += (pointer.ty - pointer.y) * Math.min(1, dt * 2.4);
 
-    live += ((run ? 1 : 0.34) - live) * Math.min(1, dt * 2.6);
+    live += ((run ? 1 : 0.3) - live) * Math.min(1, dt * 2.6);
 
     draw(t);
   }
@@ -643,9 +750,9 @@ void main() {
   }).observe(canvas.parentElement);
 
   setMode(0);
+  applyBlend();
 
   if (reduced) {
-    /* one composed frame, and nothing to click: the field is a still */
     root.classList.add("still");
     draw(6.4);
   } else {
@@ -665,39 +772,12 @@ void main() {
 
   /* ---------------------------------------------------------------- theme -- */
 
-  const themeBtn = document.querySelector("[data-theme]");
-  const themeLabel = document.querySelector("[data-theme-label]");
-
   function syncTheme() {
-    const ink = themeName() === "ink";
-    /* the label names the theme the button takes you to, not the one you are in */
-    if (themeLabel) themeLabel.textContent = ink ? "Paper" : "Ink";
-    if (themeBtn) {
-      themeBtn.setAttribute(
-        "aria-label",
-        ink ? "Switch to the paper theme" : "Switch to the ink theme"
-      );
-    }
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", ink ? "#06080d" : "#ffffff");
     applyBlend();
     if (reduced) draw(6.4);
   }
 
-  if (themeBtn) {
-    themeBtn.addEventListener("click", () => {
-      root.classList.toggle("ink");
-      root.classList.toggle("paper");
-      try {
-        localStorage.setItem("acm-theme", themeName());
-      } catch (e) {
-        /* private mode: the choice just will not stick */
-      }
-      syncTheme();
-    });
-  }
-
-  syncTheme();
+  document.addEventListener("themechange", syncTheme);
 
   /* a handle for the QA harness */
   window.__net = {

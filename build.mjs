@@ -19,10 +19,12 @@ const FILES = [
   "index.html",
   "net.html",
   "site.css",
+  "ink.css",
   "net.css",
   "fonts.css",
   "scene.js",
   "net.js",
+  "theme.js",
   "robots.txt",
   "sitemap.xml",
 ];
